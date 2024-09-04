@@ -1,0 +1,515 @@
+CREATE TABLE IF NOT EXISTS "Role" (
+    "Id" UUID PRIMARY KEY,
+	"Name" VARCHAR(30)
+);
+
+CREATE TABLE IF NOT EXISTS "AddressType" (
+    "Id" UUID PRIMARY KEY,
+	"Name" VARCHAR(30)
+);
+
+CREATE TABLE IF NOT EXISTS "PaymentMethod" (
+    "Id" UUID PRIMARY KEY,
+	"Name" VARCHAR(30)
+);
+
+CREATE TABLE IF NOT EXISTS "PaymentStatus" (
+    "Id" UUID PRIMARY KEY,
+	"Name" VARCHAR(30)
+);
+
+CREATE TABLE IF NOT EXISTS "User" (
+    "Id" UUID PRIMARY KEY,
+    "Username" VARCHAR(50) NOT NULL UNIQUE,
+    "Email" VARCHAR(100) NOT NULL UNIQUE,
+    "Password" CHAR(64) NOT NULL,
+	"CreatedAt" TIMESTAMP NOT NULL,
+	"DeletedAt" TIMESTAMP,
+	"RoleId" UUID NOT NULL,
+	CONSTRAINT "FK_User_Role_RoleId" FOREIGN KEY ("RoleId") REFERENCES "Role"("Id")
+);
+
+CREATE TABLE IF NOT EXISTS "Address" (
+    "Id" UUID PRIMARY KEY,
+    "AddressLine" VARCHAR(400) NOT NULL,
+    "Zipcode" VARCHAR(16) NOT NULL,
+    "City" VARCHAR(200) NOT NULL,
+	"CreatedAt" TIMESTAMP NOT NULL,
+	"UserId" UUID,
+	"AddressTypeId" UUID NOT NULL,
+    CONSTRAINT "FK_Address_User_UserId"  FOREIGN KEY ("UserId") REFERENCES "User"("Id"),
+	CONSTRAINT "FK_Address_AddressType_AddressTypeId" FOREIGN KEY ("AddressTypeId") REFERENCES "AddressType"("Id")
+);
+
+CREATE TABLE IF NOT EXISTS "Manufacturer" (
+    "Id" UUID PRIMARY KEY,
+    "Name" VARCHAR(60) NOT NULL,
+    "Description" TEXT
+);
+
+CREATE TABLE IF NOT EXISTS "Category" (
+    "Id" UUID PRIMARY KEY,
+    "Name" VARCHAR(60) NOT NULL,
+    "Description" TEXT
+);
+
+CREATE TABLE IF NOT EXISTS "Item" (
+    "Id" UUID PRIMARY KEY,
+    "Model" VARCHAR(200) NOT NULL,
+    "Description" TEXT,
+    "Price" DECIMAL NOT NULL,
+	"Quantity" INTEGER NOT NULL,
+	"Specs" VARCHAR NOT NULL,
+	"CreatedAt" TIMESTAMP NOT NULL,
+	"DeletedAt" TIMESTAMP,
+	"UserCreatedId" UUID,
+	"ManufacturerId" UUID,
+	"CategoryId" UUID,
+    CONSTRAINT "FK_Item_User_UserCreatedId"  FOREIGN KEY ("UserCreatedId") REFERENCES "User"("Id"),
+	CONSTRAINT "FK_Item_Manufacturer_ManufacturerId" FOREIGN KEY ("ManufacturerId") REFERENCES "Manufacturer"("Id"),
+	CONSTRAINT "FK_Item_Category_CategoryId" FOREIGN KEY ("CategoryId") REFERENCES "Category"("Id")
+);
+
+CREATE TABLE IF NOT EXISTS "Payment" (
+    "Id" UUID PRIMARY KEY,
+    "Amount" DECIMAL,
+	"PaymentMethodId" UUID NOT NULL,
+	"PaymentStatusId" UUID NOT NULL,
+	CONSTRAINT "FK_Payment_PaymentMethod_PaymentMethodId"  FOREIGN KEY ("PaymentMethodId") REFERENCES "PaymentMethod"("Id"),
+	CONSTRAINT "FK_Payment_PaymentStatus_PaymentStatusId" FOREIGN KEY ("PaymentStatusId") REFERENCES "PaymentStatus"("Id")
+);
+
+CREATE TABLE IF NOT EXISTS "TotalOrder" (
+    "Id" UUID PRIMARY KEY,
+	"CreatedAt" TIMESTAMP NOT NULL,
+	"DeliveredAt" TIMESTAMP,
+	"DeletedAt" TIMESTAMP,
+	"UserId" UUID,
+	"AddressId" UUID,
+	"PaymentId" UUID UNIQUE,
+    CONSTRAINT "FK_TotalOrder_User_UserId"  FOREIGN KEY ("UserId") REFERENCES "User"("Id"),
+	CONSTRAINT "FK_TotalOrder_Address_AddressId" FOREIGN KEY ("AddressId") REFERENCES "Address"("Id"),
+	CONSTRAINT "FK_TotalOrder_Payment_PaymentId" FOREIGN KEY ("PaymentId") REFERENCES "Payment"("Id")
+);
+
+CREATE TABLE IF NOT EXISTS "ItemOrder" (
+    "Id" UUID PRIMARY KEY,
+    "Quantity" INTEGER NOT NULL,
+	"CreatedAt" TIMESTAMP NOT NULL,
+	"ItemId" UUID,
+	"TotalOrderId" UUID NOT NULL,
+    CONSTRAINT "FK_ItemOrder_Item_ItemId"  FOREIGN KEY ("ItemId") REFERENCES "Item"("Id"),
+	CONSTRAINT "FK_ItemOrder_TotalOrder_TotalOrderId" FOREIGN KEY ("TotalOrderId") REFERENCES "TotalOrder"("Id")
+);
+
+CREATE TABLE IF NOT EXISTS "Review" (
+    "Id" UUID PRIMARY KEY,
+	"StarCount" INTEGER CHECK ("StarCount" BETWEEN 1 AND 5) NOT NULL,
+	"Comment" TEXT,
+	"CreatedAt" TIMESTAMP NOT NULL,
+	"UserId" UUID,
+	"ItemId" UUID,
+    CONSTRAINT "FK_Review_User_UserId" FOREIGN KEY ("UserId") REFERENCES "User"("Id"),
+	CONSTRAINT "FK_Review_Item_ItemId" FOREIGN KEY ("ItemId") REFERENCES "Item"("Id")
+);
+
+CREATE TABLE IF NOT EXISTS "WishListItem" (
+    "Id" UUID PRIMARY KEY,
+	"CreatedAt" TIMESTAMP NOT NULL,
+	"UserId" UUID,
+	"ItemId" UUID,
+    CONSTRAINT "FK_WishListItem_User_UserId" FOREIGN KEY ("UserId") REFERENCES "User"("Id"),
+	CONSTRAINT "FK_WishListItem_Item_ItemId" FOREIGN KEY ("ItemId") REFERENCES "Item"("Id")
+);
+
+INSERT INTO "Role" ("Id", "Name") VALUES ('b94cd89b-a57d-40b4-9a3e-2284ac174399', 'USER');
+INSERT INTO "Role" ("Id", "Name") VALUES ('020dbfd5-d833-491d-8299-759d6bcda8a2', 'ADMIN');
+
+INSERT INTO "AddressType" ("Id", "Name") VALUES ('21ce8ac1-faaf-4e95-9981-b951f31cc391', 'Billing');
+INSERT INTO "AddressType" ("Id", "Name") VALUES ('d2818e18-314e-445f-b540-cac54d631f9a', 'Shipping');
+
+INSERT INTO "PaymentMethod" ("Id", "Name") VALUES ('1cc9dca9-13d9-456e-84ab-4d7eb647ec93', 'Visa Credit Card');
+INSERT INTO "PaymentMethod" ("Id", "Name") VALUES ('72725c82-afac-4873-981e-15fd65077eb1', 'MasterCard Credit Card');
+INSERT INTO "PaymentMethod" ("Id", "Name") VALUES ('0886ca3a-93d2-4c1f-8934-ac191e53b07f', 'American Express Credit Card');
+INSERT INTO "PaymentMethod" ("Id", "Name") VALUES ('74fc82c7-4c5d-4aa7-b382-48a04fa39db7', 'Paypal');
+
+INSERT INTO "PaymentStatus" ("Id", "Name") VALUES ('330e1ed7-aa49-4b8c-862f-671a6697d4b3', 'PENDING');
+INSERT INTO "PaymentStatus" ("Id", "Name") VALUES ('72d45fe1-88c3-4929-9c75-59de635b30c5', 'CONFIRMED');
+INSERT INTO "PaymentStatus" ("Id", "Name") VALUES ('ba2fe642-e616-4d56-a65e-bb281da074ac', 'CANCELED');
+
+INSERT INTO "User" ("Id", "Username", "Email", "Password", "CreatedAt", "DeletedAt", "RoleId")
+VALUES (
+	'fb014bd7-8e15-459d-9a16-ce0471ca4419',
+    'admin415', 
+    'admin415@example.com', 
+    '33bf9d6e821d44cc580487e3aefa17b01cb9b7b6805a2b64060aaffef3e83fb6',
+    NOW(),
+    NULL,
+    '020dbfd5-d833-491d-8299-759d6bcda8a2'
+);
+
+INSERT INTO "User" ("Id", "Username", "Email", "Password", "CreatedAt", "DeletedAt", "RoleId")
+VALUES (
+	'6228f441-10c4-4566-923a-2c0ca44b7f8b',
+    'admin185', 
+    'admin185@example.com', 
+    '285080fd3ae4432e933735d6d29599af3449e8fa5e7f9450dcc5c09d7f0ef1e4',
+    NOW(),
+    NULL,
+    '020dbfd5-d833-491d-8299-759d6bcda8a2'
+);
+
+INSERT INTO "User" ("Id", "Username", "Email", "Password", "CreatedAt", "DeletedAt", "RoleId")
+VALUES (
+	'1ce79c88-c442-444a-86a6-bd416512c945',
+    'trevor512', 
+    'trevor512@example.com', 
+    '156271948b3edfa5d59f267e236e247efd4c37930aca8461dcff988b18fe6d2f',
+    NOW(),
+    NULL,
+    'b94cd89b-a57d-40b4-9a3e-2284ac174399'
+);
+
+INSERT INTO "User" ("Id", "Username", "Email", "Password", "CreatedAt", "DeletedAt", "RoleId")
+VALUES (
+	'62d68545-feca-4bb6-a048-9c6176b3498c',
+    'ray985', 
+    'ray985@example.com', 
+    '28855e864f464908212c64d6e0970704cf78a8f6ca6d28a9fcc41539f6c6d9ae',
+    NOW(),
+    NULL,
+    'b94cd89b-a57d-40b4-9a3e-2284ac174399'
+);
+
+INSERT INTO "Address" ("Id", "AddressLine", "Zipcode", "City", "CreatedAt", "UserId", "AddressTypeId")
+VALUES (
+    'f3b9c2e1-5e94-4a72-8906-9a526f8a6a2d',
+    '123 Main Street, Apt 4B', 
+    '12345',
+    'New York',
+    NOW(),
+    '1ce79c88-c442-444a-86a6-bd416512c945',
+    '21ce8ac1-faaf-4e95-9981-b951f31cc391'
+);
+
+INSERT INTO "Address" ("Id", "AddressLine", "Zipcode", "City", "CreatedAt", "UserId", "AddressTypeId")
+VALUES (
+    '8a6e5b2c-df16-4d0d-8887-a33a6f9fcb0e',
+    '789 Maple Street', 
+    '54321',
+    'Boston',
+    NOW(),
+    '1ce79c88-c442-444a-86a6-bd416512c945',
+    'd2818e18-314e-445f-b540-cac54d631f9a'
+);
+
+INSERT INTO "Address" ("Id", "AddressLine", "Zipcode", "City", "CreatedAt", "UserId", "AddressTypeId")
+VALUES (
+    '72a8c4e5-b2b8-4af1-b123-459dbb6f7c8e',
+    '456 Elm Street, Suite 5A', 
+    '67890',
+    'Los Angeles',
+    NOW(),
+    '62d68545-feca-4bb6-a048-9c6176b3498c',
+    '21ce8ac1-faaf-4e95-9981-b951f31cc391'
+);
+
+INSERT INTO "Address" ("Id", "AddressLine", "Zipcode", "City", "CreatedAt", "UserId", "AddressTypeId")
+VALUES (
+    'f4c7d3e7-1b7d-4b61-85f9-909a5d7c6e8b',
+    '159 Oak Avenue', 
+    '24680',
+    'San Francisco',
+    NOW(),
+    '62d68545-feca-4bb6-a048-9c6176b3498c',
+    'd2818e18-314e-445f-b540-cac54d631f9a'
+);
+
+INSERT INTO "Manufacturer" ("Id", "Name", "Description")
+VALUES (
+    'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    'NVIDIA',
+    'A leading manufacturer of graphics processing units (GPUs) and other related technology, known for their GeForce, Quadro, and Tesla product lines.'
+);
+
+INSERT INTO "Manufacturer" ("Id", "Name", "Description")
+VALUES (
+    '123e4567-e89b-12d3-a456-426614174000',
+    'AMD',
+    'Advanced Micro Devices (AMD) is a global semiconductor company that develops computer processors and related technologies, known for their Ryzen and Radeon product lines.'
+);
+
+INSERT INTO "Manufacturer" ("Id", "Name", "Description")
+VALUES (
+    '0a1b2c3d-4e5f-6789-0abc-def123456789',
+    'Intel',
+    'Intel Corporation is a multinational corporation and technology company, best known for its microprocessors, integrated circuits, and development of motherboards and chipsets.'
+);
+
+INSERT INTO "Manufacturer" ("Id", "Name", "Description")
+VALUES (
+    'abcd1234-ef56-7890-abcd-1234567890ef',
+    'ASUS',
+    'ASUS is a multinational computer hardware and electronics company, known for their motherboards, graphics cards, monitors, and other PC components.'
+);
+
+INSERT INTO "Manufacturer" ("Id", "Name", "Description")
+VALUES (
+    '9876abcd-1234-5678-9abc-def012345678',
+    'MSI',
+    'Micro-Star International (MSI) is a Taiwanese multinational company that designs and develops computer hardware, including graphics cards, motherboards, laptops, and gaming systems.'
+);
+
+INSERT INTO "Manufacturer" ("Id", "Name", "Description")
+VALUES (
+    '1a2b3c4d-5e6f-7890-ab12-cdef34567890',
+    'Corsair', 
+    'Corsair is a leading manufacturer of high-performance PC components, including memory, power supplies, and cooling solutions.'
+);
+
+INSERT INTO "Manufacturer" ("Id", "Name", "Description")
+VALUES (
+    'a5e26db3-1448-4cc5-9f10-334ab4d37b5a', 
+    'G.Skill', 
+    'G.Skill is a renowned manufacturer of high-quality memory products, particularly known for their performance-oriented RAM modules.'
+);
+
+INSERT INTO "Manufacturer" ("Id", "Name", "Description")
+VALUES (
+    '34c10b67-b2df-4646-b60a-5e7bbeb75c62', 
+    'ASRock', 
+    'ASRock is a manufacturer specializing in motherboards, industrial PCs, and servers, known for their innovation and reliability.'
+);
+
+INSERT INTO "Manufacturer" ("Id", "Name", "Description")
+VALUES (
+    'f11b91ae-9577-4368-9fb6-4006e1b66f72', 
+    'EVGA', 
+    'EVGA is a technology company specializing in video cards, motherboards, power supplies, and gaming peripherals.'
+);
+
+INSERT INTO "Manufacturer" ("Id", "Name", "Description")
+VALUES (
+    '06115b9a-2e5d-4958-a6b4-2d109f7816e5', 
+    'Seasonic', 
+    'Seasonic is a leading manufacturer of power supplies known for their efficiency, reliability, and high-quality design.'
+);
+
+INSERT INTO "Category" ("Id", "Name", "Description")
+VALUES (
+    'd4e5f6a7-b8c9-4d01-89ab-cdef12345678', 
+    'Graphics Cards', 
+    'Devices that render images and videos, primarily used in gaming, professional graphics work, and machine learning.'
+);
+
+INSERT INTO "Category" ("Id", "Name", "Description")
+VALUES (
+    'e7bf445b-f5a5-496f-8ea0-3ab556c76998', 
+    'Processors', 
+    'Central Processing Units (CPUs) that act as the brain of the computer, executing instructions and processing data.'
+);
+
+INSERT INTO "Category" ("Id", "Name", "Description")
+VALUES (
+    '22bac14a-094a-4ec1-a3a2-c84acc941dd2', 
+    'Motherboards', 
+    'Main circuit boards that connect all components of a computer, providing connectors for the CPU, RAM, and peripherals.'
+);
+
+INSERT INTO "Category" ("Id", "Name", "Description")
+VALUES (
+    '1b008fe0-d06d-4ed4-9214-a276e73bb4eb', 
+    'Memory', 
+    'Devices used to store data temporarily or permanently, including RAM and storage drives like SSDs and HDDs.'
+);
+
+INSERT INTO "Category" ("Id", "Name", "Description")
+VALUES (
+    'c8da2ece-b83b-4d22-a177-747cbe9f4b65', 
+    'Power Supplies', 
+    'Units that supply electrical power to a computer, converting AC from the wall outlet to usable DC for components.'
+);
+
+INSERT INTO "Item" ("Id", "Model", "Description", "Price", "Quantity", "Specs", "CreatedAt", "DeletedAt", "UserCreatedId", "ManufacturerId", "CategoryId")
+VALUES (
+    '6789abcd-1234-5678-90ab-cdef01234567', 
+    'GeForce RTX 3080', 
+    'A high-performance graphics card suitable for gaming and professional graphics work, featuring 10GB GDDR6X memory.',
+    699.99, 
+    50, 
+    '{"Memory": "10GB GDDR6X", "Interface": "HDMI 2.1", "Slot": "PCIe 4.0"}',
+    NOW(), 
+    NULL, 
+    'fb014bd7-8e15-459d-9a16-ce0471ca4419',
+    'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    'd4e5f6a7-b8c9-4d01-89ab-cdef12345678'
+);
+
+INSERT INTO "Item" ("Id", "Model", "Description", "Price", "Quantity", "Specs", "CreatedAt", "DeletedAt", "UserCreatedId", "ManufacturerId", "CategoryId")
+VALUES (
+    '7890bcde-2345-6789-01bc-def234567890', 
+    'Ryzen 9 5900X', 
+    'A powerful 12-core processor designed for gaming and content creation, delivering top-tier performance with a base clock of 3.7 GHz.',
+    549.99, 
+    30, 
+    '{"Cores": "12-Core", "Threads": "24-Thread", "Base Clock": "3.7GHz", "Boost Clock": "4.8GHz"}',
+    NOW(), 
+    NULL, 
+    'fb014bd7-8e15-459d-9a16-ce0471ca4419',
+    '123e4567-e89b-12d3-a456-426614174000',
+    'e7bf445b-f5a5-496f-8ea0-3ab556c76998'
+);
+
+INSERT INTO "Item" ("Id", "Model", "Description", "Price", "Quantity", "Specs", "CreatedAt", "DeletedAt", "UserCreatedId", "ManufacturerId", "CategoryId")
+VALUES (
+    '8901cdef-3456-7890-12cd-ef3456789012', 
+    'ROG Strix X570-E', 
+    'A high-end motherboard designed for gaming and overclocking, supporting the latest AMD processors with PCIe 4.0 support.',
+    299.99, 
+    20, 
+    '{"Form Factor": "ATX", "Slot": "PCIe 4.0", "Wireless": "Wi-Fi 6", "Memory Support": "DDR4 4400 MHz"}',
+    NOW(), 
+    NULL, 
+    '6228f441-10c4-4566-923a-2c0ca44b7f8b',
+    'abcd1234-ef56-7890-abcd-1234567890ef',
+    '22bac14a-094a-4ec1-a3a2-c84acc941dd2'
+);
+
+INSERT INTO "Item" ("Id", "Model", "Description", "Price", "Quantity", "Specs", "CreatedAt", "DeletedAt", "UserCreatedId", "ManufacturerId", "CategoryId")
+VALUES (
+    '9012def0-4567-8901-23de-f45678901234', 
+    'Corsair Vengeance LPX 16GB', 
+    'High-performance DDR4 memory designed for overclocking with a low-profile design that fits in most systems.',
+    89.99, 
+    100, 
+    '{"Capacity": "16GB (2 x 8GB)", "Type": "DDR4", "Speed": "3200MHz", "Latency": "CL16"}', 
+    NOW(), 
+    NULL, 
+    '6228f441-10c4-4566-923a-2c0ca44b7f8b',
+    '1a2b3c4d-5e6f-7890-ab12-cdef34567890',
+    '1b008fe0-d06d-4ed4-9214-a276e73bb4eb'
+);
+
+INSERT INTO "Payment" ("Id", "Amount", "PaymentMethodId", "PaymentStatusId")
+VALUES (
+    '11223344-5566-7788-99aa-bbccddeeff00', 
+    2 * 699.99 + 549.99, 
+    '1cc9dca9-13d9-456e-84ab-4d7eb647ec93',
+    '330e1ed7-aa49-4b8c-862f-671a6697d4b3'
+);
+
+INSERT INTO "Payment" ("Id", "Amount", "PaymentMethodId", "PaymentStatusId")
+VALUES (
+    '33445566-7788-99aa-bbcc-ddeeff002233', 
+    3 * 299.99 + 4 * 89.99, 
+    '0886ca3a-93d2-4c1f-8934-ac191e53b07f',
+    'ba2fe642-e616-4d56-a65e-bb281da074ac'
+);
+
+INSERT INTO "TotalOrder" ("Id", "CreatedAt", "DeliveredAt", "DeletedAt", "UserId", "AddressId", "PaymentId")
+VALUES (
+    '55667788-99aa-bbcc-ddee-ff0044556677', 
+    NOW(), 
+    NOW() + INTERVAL '5 days', 
+    NULL, 
+    '1ce79c88-c442-444a-86a6-bd416512c945',
+    'f3b9c2e1-5e94-4a72-8906-9a526f8a6a2d',
+    '11223344-5566-7788-99aa-bbccddeeff00'
+);
+
+INSERT INTO "TotalOrder" ("Id", "CreatedAt", "DeliveredAt", "DeletedAt", "UserId", "AddressId", "PaymentId")
+VALUES (
+    '778899aa-bbcc-ddee-ff00-112233445566', 
+    NOW(), 
+    NULL, 
+    NULL, 
+    '62d68545-feca-4bb6-a048-9c6176b3498c',
+    '72a8c4e5-b2b8-4af1-b123-459dbb6f7c8e',
+    '33445566-7788-99aa-bbcc-ddeeff002233'
+);
+
+INSERT INTO "WishListItem" ("Id", "CreatedAt", "UserId", "ItemId")
+VALUES (
+    '589d8753-ad76-4fe6-bfa0-7d5073e321cf', 
+    NOW() - INTERVAL '20 days', 
+    '1ce79c88-c442-444a-86a6-bd416512c945',
+    '7890bcde-2345-6789-01bc-def234567890'
+);
+
+INSERT INTO "WishListItem" ("Id", "CreatedAt", "UserId", "ItemId")
+VALUES (
+    '825f9772-874e-45ad-8eec-31a484c02cde', 
+    NOW() - INTERVAL '20 days', 
+    '62d68545-feca-4bb6-a048-9c6176b3498c',
+    '9012def0-4567-8901-23de-f45678901234'
+);
+
+
+INSERT INTO "ItemOrder" ("Id", "Quantity", "CreatedAt", "ItemId", "TotalOrderId")
+VALUES (
+    '123e4567-e89b-12d3-a456-426614174000', 
+    2, 
+    NOW(), 
+    '6789abcd-1234-5678-90ab-cdef01234567', 
+    '55667788-99aa-bbcc-ddee-ff0044556677'
+);
+
+INSERT INTO "ItemOrder" ("Id", "Quantity", "CreatedAt", "ItemId", "TotalOrderId")
+VALUES (
+    '234f5678-e90c-23f4-b567-526614174111', 
+    1, 
+    NOW(), 
+    '7890bcde-2345-6789-01bc-def234567890', 
+    '55667788-99aa-bbcc-ddee-ff0044556677'
+);
+
+INSERT INTO "ItemOrder" ("Id", "Quantity", "CreatedAt", "ItemId", "TotalOrderId")
+VALUES (
+    'a9c7a90f-2f7c-4b2d-8237-ba3d7b3579e0', 
+    3, 
+    NOW(), 
+    '8901cdef-3456-7890-12cd-ef3456789012', 
+    '778899aa-bbcc-ddee-ff00-112233445566'
+);
+
+INSERT INTO "ItemOrder" ("Id", "Quantity", "CreatedAt", "ItemId", "TotalOrderId")
+VALUES (
+    '8140bef1-f3d3-4a67-bc44-a9d83cdfcd55', 
+    4, 
+    NOW(), 
+    '9012def0-4567-8901-23de-f45678901234', 
+    '778899aa-bbcc-ddee-ff00-112233445566'
+);
+
+INSERT INTO "Review" ("Id", "StarCount", "Comment", "CreatedAt", "UserId", "ItemId")
+VALUES (
+    '4a8ce631-9ee6-435a-b334-d6d9a3a1468f', 
+    5, 
+    'Excellent graphics card! Great performance for gaming and rendering.', 
+    NOW(), 
+    '1ce79c88-c442-444a-86a6-bd416512c945',
+    '6789abcd-1234-5678-90ab-cdef01234567'
+);
+
+INSERT INTO "Review" ("Id", "StarCount", "Comment", "CreatedAt", "UserId", "ItemId")
+VALUES (
+    '6d21c59e-0de3-4f50-a21b-fdd6c47a4ca0', 
+    4,
+	'Outstanding motherboard with excellent build quality and advanced features. The PCIe 4.0 support and Wi-Fi 6 are fantastic.', 
+    NOW(), 
+    '62d68545-feca-4bb6-a048-9c6176b3498c',
+    '8901cdef-3456-7890-12cd-ef3456789012'
+);
+
+SELECT *
+FROM 
+    "User" u
+LEFT JOIN 
+    "TotalOrder" tor ON tor."UserId" = u."Id"
+LEFT JOIN 
+    "ItemOrder" io ON io."TotalOrderId" = tor."Id"
+LEFT JOIN 
+    "Item" i ON i."Id" = io."ItemId"
+WHERE 
+    u."Id" = '1ce79c88-c442-444a-86a6-bd416512c945';
+
