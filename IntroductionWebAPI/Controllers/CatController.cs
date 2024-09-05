@@ -30,7 +30,12 @@ namespace IntroductionWebAPI.Controllers
         [Route("{id}")]
         public IActionResult GetCat(int id)
         {
-            return Ok(cats.FirstOrDefault(cat => cat.Id == id));
+            Cat? cat = cats.FirstOrDefault(cat => cat.Id == id);
+            if(cat == null)
+            {
+                return NotFound($"Cat with Id {id} not found."); ;
+            }
+            return Ok();
         }
 
         [HttpPost]
@@ -46,16 +51,28 @@ namespace IntroductionWebAPI.Controllers
         [Route("update/{id}")]
         public IActionResult PutCat(long id, [FromBody][Required] CatUpdateModel catUpdateModel)
         {
-            var existingCat = cats.FirstOrDefault(c => c.Id == id);
+            Cat? existingCat = cats.FirstOrDefault(c => c.Id == id);
             if (existingCat == null)
             {
                 return NotFound($"Cat with Id {id} not found.");
             }
 
-            if (catUpdateModel.Age.HasValue)
+            var updateModelProperties = typeof(CatUpdateModel).GetProperties();
+
+            foreach (var property in updateModelProperties)
             {
-                existingCat.Age = catUpdateModel.Age.Value;
+                var newValue = property.GetValue(catUpdateModel);
+
+                if (newValue != null)
+                {
+                    var correspondingProperty = existingCat.GetType().GetProperty(property.Name);
+                    if (correspondingProperty != null)
+                    {
+                        correspondingProperty.SetValue(existingCat, newValue);
+                    }
+                }
             }
+
             return NoContent();
         }
 
