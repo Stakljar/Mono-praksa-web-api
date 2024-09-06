@@ -63,7 +63,7 @@ namespace IntroductionWebAPI.Controllers
 
                 while (reader.Read())
                 {
-                    Cat cat = new Cat
+                    Cat cat = new()
                     {
                         Id = reader.GetGuid(reader.GetOrdinal("CatId")),
                         Name = reader.GetString(reader.GetOrdinal("CatName")),
