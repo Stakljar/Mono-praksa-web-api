@@ -76,7 +76,7 @@ namespace IntroductionWebAPI.Controllers
                     var catId = reader["CatId"];
                     if (catId != DBNull.Value)
                     {
-                        var cat = new Cat
+                        Cat cat = new()
                         {
                             Id = reader.GetGuid(reader.GetOrdinal("CatId")),
                             Name = reader.GetString(reader.GetOrdinal("CatName")),
