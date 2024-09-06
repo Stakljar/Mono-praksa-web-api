@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace IntroductionWebAPI
+namespace Introduction.Model
 {
     public class Cat
     {

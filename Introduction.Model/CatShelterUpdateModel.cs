@@ -1,4 +1,4 @@
-﻿namespace IntroductionWebAPI
+﻿namespace Introduction.Model
 {
     public class CatShelterUpdateModel
     {
