@@ -7,30 +7,30 @@ namespace Introduction.Service
     {
         private readonly CatRepository catRepository = new();
 
-        public List<Cat>? GetCats(string name = "", int? age = null, string color = "",
+        public async Task<List<Cat>?> GetCatsAsync(string name = "", int? age = null, string color = "",
             DateOnly? ArrivalDateAfter = null, DateOnly? ArrivalDateBefore = null)
         {
-            return catRepository.GetCats(name, age, color, ArrivalDateAfter, ArrivalDateBefore);
+            return await catRepository.GetCatsAsync(name, age, color, ArrivalDateAfter, ArrivalDateBefore);
         }
 
-        public Cat? GetCat(Guid id)
+        public async Task<Cat?> GetCatAsync(Guid id)
         {
-            return catRepository.GetCatById(id);
+            return await catRepository.GetCatByIdAsync(id);
         }
 
-        public bool PostCat(CatAddModel catAddModel)
+        public async Task<bool> PostCatAsync(CatAddModel catAddModel)
         {
-            return catRepository.InsertCat(catAddModel);
+            return await catRepository.InsertCatAsync(catAddModel);
         }
 
-        public bool PutCat(Guid id, CatUpdateModel catUpdateModel)
+        public async Task<bool> PutCatAsync(Guid id, CatUpdateModel catUpdateModel)
         {
-            return catRepository.UpdateCatById(id, catUpdateModel);
+            return await catRepository.UpdateCatByIdAsync(id, catUpdateModel);
         }
 
-        public bool DeleteCat(Guid id)
+        public async Task<bool> DeleteCatAsync(Guid id)
         {
-            return catRepository.DeleteCatById(id);
+            return await catRepository.DeleteCatByIdAsync(id);
         }
     }
 }

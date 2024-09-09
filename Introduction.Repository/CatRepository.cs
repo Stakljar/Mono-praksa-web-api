@@ -2,6 +2,7 @@
 using Introduction.Repository.Common;
 using Npgsql;
 using NpgsqlTypes;
+using System.Text;
 
 namespace Introduction.Repository
 {
@@ -9,7 +10,7 @@ namespace Introduction.Repository
     {
         private readonly string connString = "Host=localhost;Username=postgres;Password=12345;Database=cat_shelter_system";
 
-        public List<Cat>? GetCats(string name = "", int? age = null, string color = "",
+        public async Task<List<Cat>?> GetCatsAsync(string name = "", int? age = null, string color = "",
             DateOnly? ArrivalDateAfter = null, DateOnly? ArrivalDateBefore = null)
         {
             try
@@ -17,12 +18,12 @@ namespace Introduction.Repository
                 using var conn = new NpgsqlConnection(connString);
                 conn.Open();
 
-                var sql =
-                    "SELECT c.\"Id\" AS CatId, c.\"Name\" AS CatName, c.\"Age\" AS CatAge, c.\"Color\" AS CatColor, c.\"ArrivalDate\" AS CatArrivalDate, " +
+                StringBuilder sql = new();
+                sql.Append("SELECT c.\"Id\" AS CatId, c.\"Name\" AS CatName, c.\"Age\" AS CatAge, c.\"Color\" AS CatColor, c.\"ArrivalDate\" AS CatArrivalDate, " +
                     "cs.\"Id\" AS ShelterId, cs.\"Name\" AS ShelterName, cs.\"Location\" AS ShelterLocation, cs.\"CreatedAt\" AS ShelterCreatedAt " +
                     "FROM \"Cat\" c " +
                     "LEFT JOIN \"CatShelter\" cs ON cs.\"Id\" = c.\"CatShelterId\" " +
-                    "WHERE 1=1 ";
+                    "WHERE 1=1 ");
 
                 var parameters = new List<NpgsqlParameter>();
                 var filterDict = new Dictionary<string, object?>
@@ -38,27 +39,27 @@ namespace Introduction.Repository
                 {
                     if (value != null)
                     {
-                        sql += key switch
+                        sql.Append(key switch
                         {
                             "name" => " AND c.\"Name\" = @name",
                             "age" => " AND c.\"Age\" = @age",
                             "color" => " AND c.\"Color\" = @color",
-                            "ArrivalDateAfter" => " AND \"ArrivalDate\" > @ArrivalDateAfter",
-                            "ArrivalDateBefore" => " AND \"ArrivalDate\" < @ArrivalDateBefore",
+                            "ArrivalDateAfter" => " AND c.\"ArrivalDate\" > @ArrivalDateAfter",
+                            "ArrivalDateBefore" => " AND c.\"ArrivalDate\" < @ArrivalDateBefore",
                             _ => throw new ArgumentException("Invalid filter key")
-                        };
+                        });
 
                         parameters.Add(new NpgsqlParameter($"@{key}", value));
                     }
                 }
 
-                using var cmd = new NpgsqlCommand(sql, conn);
+                using var cmd = new NpgsqlCommand(sql.ToString(), conn);
                 cmd.Parameters.AddRange(parameters.ToArray());
 
                 List<Cat> cats = [];
-                using var reader = cmd.ExecuteReader();
+                using var reader = await cmd.ExecuteReaderAsync();
 
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     Cat cat = new()
                     {
@@ -80,14 +81,14 @@ namespace Introduction.Repository
             }
         }
 
-        public Cat? GetCatById(Guid id)
+        public async Task<Cat?> GetCatByIdAsync(Guid id)
         {
             try
             {
                 using var conn = new NpgsqlConnection(connString);
                 conn.Open();
 
-                var sql =
+                string sql =
                     "SELECT c.\"Id\" AS CatId, c.\"Name\" AS CatName, c.\"Age\" AS CatAge, c.\"Color\" AS CatColor, c.\"ArrivalDate\" AS CatArrivalDate, " +
                     "cs.\"Id\" AS ShelterId, cs.\"Name\" AS ShelterName, cs.\"Location\" AS ShelterLocation, cs.\"CreatedAt\" AS ShelterCreatedAt " +
                     "FROM \"Cat\" c " +
@@ -97,11 +98,11 @@ namespace Introduction.Repository
                 using var cmd = new NpgsqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("id", NpgsqlDbType.Uuid, id);
 
-                using var reader = cmd.ExecuteReader();
-                CatShelter catShelter = new CatShelter();
-                if (reader.Read())
+                using var reader = await cmd.ExecuteReaderAsync();
+                CatShelter catShelter = new();
+                if (await reader.ReadAsync())
                 {
-                    Cat cat = new Cat
+                    Cat cat = new()
                     {
                         Id = reader.GetGuid(reader.GetOrdinal("CatId")),
                         Name = reader.GetString(reader.GetOrdinal("CatName")),
@@ -125,7 +126,7 @@ namespace Introduction.Repository
             }
         }
 
-        public bool InsertCat(CatAddModel catAddModel)
+        public async Task<bool> InsertCatAsync(CatAddModel catAddModel)
         {
             try
             {
@@ -140,7 +141,7 @@ namespace Introduction.Repository
                 cmd.Parameters.AddWithValue("color", catAddModel.Color);
                 cmd.Parameters.AddWithValue("arrivalDate", catAddModel.ArrivalDate ?? (object)DBNull.Value);
 
-                int rowsAffected = cmd.ExecuteNonQuery();
+                int rowsAffected = await cmd.ExecuteNonQueryAsync();
                 if (rowsAffected <= 0)
                 {
                     return false;
@@ -153,16 +154,17 @@ namespace Introduction.Repository
             }
         }
 
-        public bool UpdateCatById(Guid id, CatUpdateModel catUpdateModel)
+        public async Task<bool> UpdateCatByIdAsync(Guid id, CatUpdateModel catUpdateModel)
         {
             try
             {
                 using var conn = new NpgsqlConnection(connString);
                 conn.Open();
 
-                var sql = "UPDATE \"Cat\" SET ";
+                StringBuilder sql = new();
+                sql.Append("UPDATE \"Cat\" SET ");
                 var parameters = new List<NpgsqlParameter>();
-                var setClauses = new List<string>();
+                List<string> setClauses = new List<string>();
 
                 var updateModelProperties = typeof(CatUpdateModel).GetProperties();
 
@@ -180,13 +182,13 @@ namespace Introduction.Repository
 
                 if (setClauses.Count > 0)
                 {
-                    sql += string.Join(", ", setClauses) + " WHERE \"Id\" = @id";
+                    sql.Append(string.Join(", ", setClauses) + " WHERE \"Id\" = @id");
                     parameters.Add(new NpgsqlParameter("@id", id));
 
-                    using var cmd = new NpgsqlCommand(sql, conn);
+                    using var cmd = new NpgsqlCommand(sql.ToString(), conn);
                     cmd.Parameters.AddRange(parameters.ToArray());
 
-                    int rowsAffected = cmd.ExecuteNonQuery();
+                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
                     if (rowsAffected == 0)
                     {
@@ -205,7 +207,7 @@ namespace Introduction.Repository
             }
         }
 
-        public bool DeleteCatById(Guid id)
+        public async Task<bool> DeleteCatByIdAsync(Guid id)
         {
             try
             {
@@ -216,7 +218,7 @@ namespace Introduction.Repository
 
                 cmd.Parameters.AddWithValue("id", NpgsqlDbType.Uuid, id);
 
-                int rowsAffected = cmd.ExecuteNonQuery();
+                int rowsAffected = await cmd.ExecuteNonQueryAsync();
                 if (rowsAffected <= 0)
                 {
                     return false;

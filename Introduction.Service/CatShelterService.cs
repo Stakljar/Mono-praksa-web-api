@@ -8,29 +8,30 @@ namespace Introduction.Service
     {
         private readonly CatShelterRepository catShelterRepository = new();
 
-        public List<CatShelter>? GetCatShelters(string name = "", string location = "", DateOnly? createdAtDateAfter = null, DateOnly? createdAtDateBefore = null)
+        public async Task<List<CatShelter>?> GetCatSheltersAsync(string name = "", string location = "",
+            DateOnly? createdAtDateAfter = null, DateOnly? createdAtDateBefore = null)
         {
-            return catShelterRepository.GetCatShelters(name, location, createdAtDateAfter, createdAtDateBefore);
+            return await catShelterRepository.GetCatSheltersAsync(name, location, createdAtDateAfter, createdAtDateBefore);
         }
 
-        public CatShelter? GetCatShelter(Guid id)
+        public async Task<CatShelter?> GetCatShelterAsync(Guid id)
         {
-            return catShelterRepository.GetCatShelterById(id);
+            return await catShelterRepository.GetCatShelterByIdAsync(id);
         }
 
-        public bool PostCatShelter(CatShelterAddModel catShelterAddModel)
+        public async Task<bool> PostCatShelterAsync(CatShelterAddModel catShelterAddModel)
         {
-            return catShelterRepository.InsertCatShelter(catShelterAddModel);
+            return await catShelterRepository.InsertCatShelterAsync(catShelterAddModel);
         }
 
-        public bool PutCatShelter(Guid id, CatShelterUpdateModel catShelterUpdateModel)
+        public async Task<bool> PutCatShelterAsync(Guid id, CatShelterUpdateModel catShelterUpdateModel)
         {
-            return catShelterRepository.UpdateCatShelterById(id, catShelterUpdateModel);
+            return await catShelterRepository.UpdateCatShelterByIdAsync(id, catShelterUpdateModel);
         }
 
-        public bool DeleteCatShelter(Guid id)
+        public async Task<bool> DeleteCatShelterAsync(Guid id)
         {
-            return catShelterRepository.DeleteCatShelterById(id);
+            return await catShelterRepository.DeleteCatShelterByIdAsync(id);
         }
     }
 }

@@ -4,15 +4,15 @@ namespace Introduction.Repository.Common
 {
     public interface ICatRepository
     {
-        List<Cat>? GetCats(string name = "", int? age = null, string color = "",
+        Task<List<Cat>?> GetCatsAsync(string name = "", int? age = null, string color = "",
             DateOnly? ArrivalDateAfter = null, DateOnly? ArrivalDateBefore = null);
 
-        Cat? GetCatById(Guid id);
+        Task<Cat?> GetCatByIdAsync(Guid id);
 
-        bool InsertCat(CatAddModel catAddModel);
+        Task<bool> InsertCatAsync(CatAddModel catAddModel);
 
-        bool UpdateCatById(Guid id, CatUpdateModel catUpdateModel);
+        Task<bool> UpdateCatByIdAsync(Guid id, CatUpdateModel catUpdateModel);
 
-        bool DeleteCatById(Guid id);
+        Task<bool> DeleteCatByIdAsync(Guid id);
     }
 }

@@ -12,10 +12,10 @@ namespace IntroductionWebAPI.Controllers
         private readonly CatService catService = new();
 
         [HttpGet]
-        public IActionResult GetCats(string name = "", int? age = null, string color = "",
+        public async Task<IActionResult> GetCatsAsync(string name = "", int? age = null, string color = "",
             DateOnly? ArrivalDateAfter = null, DateOnly? ArrivalDateBefore = null)
         {
-            List<Cat>? cats = catService.GetCats(name, age, color, ArrivalDateAfter, ArrivalDateBefore);
+            List<Cat>? cats = await catService.GetCatsAsync(name, age, color, ArrivalDateAfter, ArrivalDateBefore);
             if(cats == null)
             {
                 return BadRequest("Returned null value.");
@@ -25,9 +25,9 @@ namespace IntroductionWebAPI.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public IActionResult GetCat(Guid id)
+        public async Task<IActionResult> GetCatAsync(Guid id)
         {
-            Cat? cat = catService.GetCat(id);
+            Cat? cat = await catService.GetCatAsync(id);
             if (cat == null)
             {
                 return BadRequest("Returned null value.");
@@ -37,9 +37,9 @@ namespace IntroductionWebAPI.Controllers
 
         [HttpPost]
         [Route("add")]
-        public IActionResult PostCat([FromBody][Required] CatAddModel catAddModel)
+        public async Task<IActionResult> PostCatAsync([FromBody][Required] CatAddModel catAddModel)
         {
-            bool isAdded = catService.PostCat(catAddModel);
+            bool isAdded = await catService.PostCatAsync(catAddModel);
             if(!isAdded)
             {
                 return BadRequest("Cat has not been inserted.");
@@ -49,9 +49,9 @@ namespace IntroductionWebAPI.Controllers
 
         [HttpPut]
         [Route("update/{id}")]
-        public IActionResult PutCat(Guid id, [FromBody][Required] CatUpdateModel catUpdateModel)
+        public async Task<IActionResult> PutCatAsync(Guid id, [FromBody][Required] CatUpdateModel catUpdateModel)
         {
-            bool isUpdated = catService.PutCat(id, catUpdateModel);
+            bool isUpdated = await catService.PutCatAsync(id, catUpdateModel);
             if (!isUpdated)
             {
                 return BadRequest("Cat has not been updated.");
@@ -61,9 +61,9 @@ namespace IntroductionWebAPI.Controllers
 
         [HttpDelete]
         [Route("delete/{id}")]
-        public IActionResult DeleteCat(Guid id)
+        public async Task<IActionResult> DeleteCatAsync(Guid id)
         {
-            bool isDeleted = catService.DeleteCat(id);
+            bool isDeleted = await catService.DeleteCatAsync(id);
             if (!isDeleted)
             {
                 return BadRequest("Cat has not been deleted.");

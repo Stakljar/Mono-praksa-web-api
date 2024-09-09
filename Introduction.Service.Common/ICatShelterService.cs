@@ -5,14 +5,15 @@ namespace Introduction.Service.Common
 {
     public interface ICatShelterService
     {
-        List<CatShelter>? GetCatShelters(string name = "", string location = "", DateOnly? createdAtDateAfter = null, DateOnly? createdAtDateBefore = null);
+        Task<List<CatShelter>?> GetCatSheltersAsync(string name = "", string location = "",
+            DateOnly? createdAtDateAfter = null, DateOnly? createdAtDateBefore = null);
 
-        CatShelter? GetCatShelter(Guid id);
+        Task<CatShelter?> GetCatShelterAsync(Guid id);
 
-        bool PostCatShelter(CatShelterAddModel catShelterAddModel);
+        Task<bool> PostCatShelterAsync(CatShelterAddModel catShelterAddModel);
 
-        bool PutCatShelter(Guid id, CatShelterUpdateModel catShelterUpdateModel);
+        Task<bool> PutCatShelterAsync(Guid id, CatShelterUpdateModel catShelterUpdateModel);
 
-        bool DeleteCatShelter(Guid id);
+        Task<bool> DeleteCatShelterAsync(Guid id);
     }
 }

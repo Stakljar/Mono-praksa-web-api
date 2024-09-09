@@ -5,14 +5,15 @@ namespace Introduction.Repository.Common
 {
     public interface ICatShelterRepository
     {
-        List<CatShelter>? GetCatShelters(string name = "", string location = "", DateOnly? createdAtDateAfter = null, DateOnly? createdAtDateBefore = null);
+        Task<List<CatShelter>?> GetCatSheltersAsync(string name = "", string location = "",
+            DateOnly? createdAtDateAfter = null, DateOnly? createdAtDateBefore = null);
 
-        CatShelter? GetCatShelterById(Guid id);
+        Task<CatShelter?> GetCatShelterByIdAsync(Guid id);
 
-        bool InsertCatShelter(CatShelterAddModel catShelterAddModel);
+        Task<bool> InsertCatShelterAsync(CatShelterAddModel catShelterAddModel);
 
-        bool UpdateCatShelterById(Guid id, CatShelterUpdateModel catShelterUpdateModel);
+        Task<bool> UpdateCatShelterByIdAsync(Guid id, CatShelterUpdateModel catShelterUpdateModel);
 
-        bool DeleteCatShelterById(Guid id);
+        Task<bool> DeleteCatShelterByIdAsync(Guid id);
     }
 }

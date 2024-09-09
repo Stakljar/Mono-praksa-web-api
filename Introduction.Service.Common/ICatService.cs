@@ -5,15 +5,15 @@ namespace Introduction.Service.Common
 {
     public interface ICatService
     {
-        List<Cat>? GetCats(string name = "", int? age = null, string color = "",
+        Task<List<Cat>?> GetCatsAsync(string name = "", int? age = null, string color = "",
             DateOnly? ArrivalDateAfter = null, DateOnly? ArrivalDateBefore = null);
 
-        Cat? GetCat(Guid id);
+        Task<Cat?> GetCatAsync(Guid id);
 
-        bool PostCat(CatAddModel catAddModel);
+        Task<bool> PostCatAsync(CatAddModel catAddModel);
 
-        bool PutCat(Guid id, CatUpdateModel catUpdateModel);
+        Task<bool> PutCatAsync(Guid id, CatUpdateModel catUpdateModel);
 
-        bool DeleteCat(Guid id);
+        Task<bool> DeleteCatAsync(Guid id);
     }
 }

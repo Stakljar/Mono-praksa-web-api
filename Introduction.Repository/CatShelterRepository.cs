@@ -2,6 +2,7 @@
 using Introduction.Repository.Common;
 using Npgsql;
 using NpgsqlTypes;
+using System.Text;
 
 namespace Introduction.Repository
 {
@@ -9,19 +10,20 @@ namespace Introduction.Repository
     {
         private readonly string connString = "Host=localhost;Username=postgres;Password=12345;Database=cat_shelter_system";
 
-        public List<CatShelter>? GetCatShelters(string name = "", string location = "", DateOnly? createdAtDateAfter = null, DateOnly? createdAtDateBefore = null)
+        public async Task<List<CatShelter>?> GetCatSheltersAsync(string name = "", string location = "",
+            DateOnly? createdAtDateAfter = null, DateOnly? createdAtDateBefore = null)
         {
             try
             {
                 using var conn = new NpgsqlConnection(connString);
                 conn.Open();
 
-                var sql =
-                    "SELECT cs.\"Id\" AS ShelterId, cs.\"Name\" AS ShelterName, cs.\"Location\" AS ShelterLocation, cs.\"CreatedAt\" AS ShelterCreatedAt, " +
-                    "c.\"Id\" AS CatId, c.\"Name\" AS CatName, c.\"Age\" AS CatAge, c.\"Color\" AS CatColor, c.\"ArrivalDate\" AS CatArrivalDate " +
-                    "FROM \"CatShelter\" cs " +
-                    "LEFT JOIN \"Cat\" c ON cs.\"Id\" = c.\"CatShelterId\" " +
-                    "WHERE 1=1 ";
+                StringBuilder sql = new();
+                sql.Append("SELECT cs.\"Id\" AS ShelterId, cs.\"Name\" AS ShelterName, cs.\"Location\" AS ShelterLocation, cs.\"CreatedAt\" AS ShelterCreatedAt, " +
+                "c.\"Id\" AS CatId, c.\"Name\" AS CatName, c.\"Age\" AS CatAge, c.\"Color\" AS CatColor, c.\"ArrivalDate\" AS CatArrivalDate " +
+                "FROM \"CatShelter\" cs " +
+                "LEFT JOIN \"Cat\" c ON cs.\"Id\" = c.\"CatShelterId\" " +
+                "WHERE 1=1 ");
 
                 var parameters = new List<NpgsqlParameter>();
                 var filterDict = new Dictionary<string, object?>
@@ -36,26 +38,26 @@ namespace Introduction.Repository
                 {
                     if (value != null)
                     {
-                        sql += key switch
+                        sql.Append(key switch
                         {
                             "name" => " AND cs.\"Name\" = @name",
                             "location" => " AND cs.\"Location\" = @location",
                             "createdAtDateAfter" => " AND \"CreatedAt\" > @createdAtDateAfter",
                             "createdAtDateBefore" => " AND \"CreatedAt\" < @createdAtDateBefore",
                             _ => throw new ArgumentException("Invalid filter key")
-                        };
+                        });
 
                         parameters.Add(new NpgsqlParameter($"@{key}", value));
                     }
                 }
 
-                using var cmd = new NpgsqlCommand(sql, conn);
+                using var cmd = new NpgsqlCommand(sql.ToString(), conn);
                 cmd.Parameters.AddRange(parameters.ToArray());
 
                 var catShelters = new Dictionary<Guid, CatShelter>();
-                using var reader = cmd.ExecuteReader();
+                using var reader = await cmd.ExecuteReaderAsync();
 
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     var shelterId = reader.GetGuid(reader.GetOrdinal("ShelterId"));
                     if (!catShelters.ContainsKey(shelterId))
@@ -93,14 +95,14 @@ namespace Introduction.Repository
             }
         }
 
-        public CatShelter? GetCatShelterById(Guid id)
+        public async Task<CatShelter?> GetCatShelterByIdAsync(Guid id)
         {
             try
             {
                 using var conn = new NpgsqlConnection(connString);
                 conn.Open();
 
-                var sql =
+                string sql =
                     "SELECT cs.\"Id\" AS ShelterId, cs.\"Name\" AS ShelterName, cs.\"Location\" AS ShelterLocation, cs.\"CreatedAt\" AS ShelterCreatedAt, " +
                     "c.\"Id\" AS CatId, c.\"Name\" AS CatName, c.\"Age\" AS CatAge, c.\"Color\" AS CatColor, c.\"ArrivalDate\" AS CatArrivalDate " +
                     "FROM \"CatShelter\" cs " +
@@ -110,20 +112,17 @@ namespace Introduction.Repository
                 using var cmd = new NpgsqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("id", NpgsqlDbType.Uuid, id);
 
-                using var reader = cmd.ExecuteReader();
+                using var reader = await cmd.ExecuteReaderAsync();
                 CatShelter? catShelter = null;
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
-                    if (catShelter == null)
+                    catShelter ??= new CatShelter
                     {
-                        catShelter = new CatShelter
-                        {
-                            Id = reader.GetGuid(reader.GetOrdinal("ShelterId")),
-                            Name = reader.GetString(reader.GetOrdinal("ShelterName")),
-                            Location = reader.GetString(reader.GetOrdinal("ShelterLocation")),
-                            CreatedAt = reader.GetFieldValue<DateOnly>(reader.GetOrdinal("ShelterCreatedAt")),
-                        };
-                    }
+                        Id = reader.GetGuid(reader.GetOrdinal("ShelterId")),
+                        Name = reader.GetString(reader.GetOrdinal("ShelterName")),
+                        Location = reader.GetString(reader.GetOrdinal("ShelterLocation")),
+                        CreatedAt = reader.GetFieldValue<DateOnly>(reader.GetOrdinal("ShelterCreatedAt")),
+                    };
 
                     if (!reader.IsDBNull(reader.GetOrdinal("CatId")))
                     {
@@ -147,7 +146,7 @@ namespace Introduction.Repository
             }
         }
 
-        public bool InsertCatShelter(CatShelterAddModel catShelterAddModel)
+        public async Task<bool> InsertCatShelterAsync(CatShelterAddModel catShelterAddModel)
         {
             try
             {
@@ -161,7 +160,7 @@ namespace Introduction.Repository
                 cmd.Parameters.AddWithValue("location", catShelterAddModel.Location);
                 cmd.Parameters.AddWithValue("createdAt", catShelterAddModel.CreatedAt ?? new DateOnly());
 
-                int rowsAffected = cmd.ExecuteNonQuery();
+                int rowsAffected = await cmd.ExecuteNonQueryAsync();
                 if (rowsAffected <= 0)
                 {
                     return false;
@@ -174,16 +173,17 @@ namespace Introduction.Repository
             }
         }
 
-        public bool UpdateCatShelterById(Guid id, CatShelterUpdateModel catShelterUpdateModel)
+        public async Task<bool> UpdateCatShelterByIdAsync(Guid id, CatShelterUpdateModel catShelterUpdateModel)
         {
             try
             {
                 using var conn = new NpgsqlConnection(connString);
                 conn.Open();
 
-                var sql = "UPDATE \"CatShelter\" SET ";
+                StringBuilder sql = new();
+                sql.Append("UPDATE \"CatShelter\" SET ");
                 var parameters = new List<NpgsqlParameter>();
-                var setClauses = new List<string>();
+                List<string> setClauses = [];
 
                 var updateModelProperties = typeof(CatShelterUpdateModel).GetProperties();
 
@@ -201,13 +201,13 @@ namespace Introduction.Repository
 
                 if (setClauses.Count > 0)
                 {
-                    sql += string.Join(", ", setClauses) + " WHERE \"Id\" = @id";
+                    sql.Append(string.Join(", ", setClauses) + " WHERE \"Id\" = @id");
                     parameters.Add(new NpgsqlParameter("@id", id));
 
-                    using var cmd = new NpgsqlCommand(sql, conn);
+                    using var cmd = new NpgsqlCommand(sql.ToString(), conn);
                     cmd.Parameters.AddRange(parameters.ToArray());
 
-                    int rowsAffected = cmd.ExecuteNonQuery();
+                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
                     if (rowsAffected == 0)
                     {
@@ -226,7 +226,7 @@ namespace Introduction.Repository
             }
         }
 
-        public bool DeleteCatShelterById(Guid id)
+        public async Task<bool> DeleteCatShelterByIdAsync(Guid id)
         {
             try
             {
@@ -237,7 +237,7 @@ namespace Introduction.Repository
 
                 cmd.Parameters.AddWithValue("id", NpgsqlDbType.Uuid, id);
 
-                int rowsAffected = cmd.ExecuteNonQuery();
+                int rowsAffected = await cmd.ExecuteNonQueryAsync();
                 if (rowsAffected <= 0)
                 {
                     return false;
