@@ -5,7 +5,7 @@ namespace Introduction.Repository.Common
     public interface ICatRepository
     {
         Task<List<Cat>?> GetCatsAsync(string name = "", int? age = null, string color = "",
-            DateOnly? ArrivalDateAfter = null, DateOnly? ArrivalDateBefore = null);
+           DateOnly? arrivalDateAfter = null, DateOnly? arrivalDateBefore = null);
 
         Task<Cat?> GetCatByIdAsync(Guid id);
 

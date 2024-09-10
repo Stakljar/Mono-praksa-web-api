@@ -1,12 +1,11 @@
-﻿
-using Introduction.Model;
+﻿using Introduction.Model;
 
 namespace Introduction.Service.Common
 {
     public interface ICatService
     {
         Task<List<Cat>?> GetCatsAsync(string name = "", int? age = null, string color = "",
-            DateOnly? ArrivalDateAfter = null, DateOnly? ArrivalDateBefore = null);
+            DateOnly? arrivalDateAfter = null, DateOnly? arrivalDateBefore = null);
 
         Task<Cat?> GetCatAsync(Guid id);
 

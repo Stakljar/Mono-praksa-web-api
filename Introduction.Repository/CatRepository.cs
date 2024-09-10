@@ -11,7 +11,7 @@ namespace Introduction.Repository
         private readonly string connString = "Host=localhost;Username=postgres;Password=12345;Database=cat_shelter_system";
 
         public async Task<List<Cat>?> GetCatsAsync(string name = "", int? age = null, string color = "",
-            DateOnly? ArrivalDateAfter = null, DateOnly? ArrivalDateBefore = null)
+            DateOnly? arrivalDateAfter = null, DateOnly? arrivalDateBefore = null)
         {
             try
             {
@@ -31,8 +31,8 @@ namespace Introduction.Repository
                     { "name", !string.IsNullOrEmpty(name) ? name : null },
                     { "age", age.HasValue ? age : null },
                     { "color", !string.IsNullOrEmpty(color) ? color : null },
-                    { "ArrivalDateAfter", ArrivalDateAfter.HasValue ? ArrivalDateAfter.Value : null },
-                    { "ArrivalDateBefore", ArrivalDateBefore.HasValue ? ArrivalDateBefore.Value : null }
+                    { "ArrivalDateAfter", arrivalDateAfter.HasValue ? arrivalDateAfter.Value : null },
+                    { "ArrivalDateBefore", arrivalDateBefore.HasValue ? arrivalDateBefore.Value : null }
                 };
 
                 foreach (var (key, value) in filterDict)

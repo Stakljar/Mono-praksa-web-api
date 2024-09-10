@@ -1,36 +1,42 @@
 ﻿using Introduction.Model;
-using Introduction.Repository;
+using Introduction.Repository.Common;
+using Introduction.Service.Common;
 
 namespace Introduction.Service
 {
-    public class CatService
+    public class CatService : ICatService
     {
-        private readonly CatRepository catRepository = new();
+        private readonly ICatRepository _catRepository;
+
+        public CatService(ICatRepository catRepository)
+        {
+            _catRepository = catRepository;
+        }
 
         public async Task<List<Cat>?> GetCatsAsync(string name = "", int? age = null, string color = "",
-            DateOnly? ArrivalDateAfter = null, DateOnly? ArrivalDateBefore = null)
+            DateOnly? arrivalDateAfter = null, DateOnly? arrivalDateBefore = null)
         {
-            return await catRepository.GetCatsAsync(name, age, color, ArrivalDateAfter, ArrivalDateBefore);
+            return await _catRepository.GetCatsAsync(name, age, color, arrivalDateAfter, arrivalDateBefore);
         }
 
         public async Task<Cat?> GetCatAsync(Guid id)
         {
-            return await catRepository.GetCatByIdAsync(id);
+            return await _catRepository.GetCatByIdAsync(id);
         }
 
         public async Task<bool> PostCatAsync(CatAddModel catAddModel)
         {
-            return await catRepository.InsertCatAsync(catAddModel);
+            return await _catRepository.InsertCatAsync(catAddModel);
         }
 
         public async Task<bool> PutCatAsync(Guid id, CatUpdateModel catUpdateModel)
         {
-            return await catRepository.UpdateCatByIdAsync(id, catUpdateModel);
+            return await _catRepository.UpdateCatByIdAsync(id, catUpdateModel);
         }
 
         public async Task<bool> DeleteCatAsync(Guid id)
         {
-            return await catRepository.DeleteCatByIdAsync(id);
+            return await _catRepository.DeleteCatByIdAsync(id);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿
-using Introduction.Model;
+﻿using Introduction.Model;
 
 namespace Introduction.Service.Common
 {

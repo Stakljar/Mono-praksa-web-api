@@ -1,5 +1,5 @@
 ﻿using Introduction.Model;
-using Introduction.Service;
+using Introduction.Service.Common;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -9,13 +9,18 @@ namespace IntroductionWebAPI.Controllers
     [Route("cat_shelters")]
     public class CatShelterController : Controller
     {
-        private readonly CatShelterService catShelterService = new();
+        private readonly ICatShelterService _catShelterService;
+
+        public CatShelterController(ICatShelterService catShelterService)
+        {
+            _catShelterService = catShelterService;
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetCatSheltersAsync(string name = "", string location = "",
             DateOnly? createdAtDateAfter = null, DateOnly? createdAtDateBefore = null)
         {
-            List<CatShelter>? catsShelters = await catShelterService.GetCatSheltersAsync(name, location, createdAtDateAfter, createdAtDateBefore);
+            List<CatShelter>? catsShelters = await _catShelterService.GetCatSheltersAsync(name, location, createdAtDateAfter, createdAtDateBefore);
             if (catsShelters == null)
             {
                 return BadRequest("Returned null value.");
@@ -27,7 +32,7 @@ namespace IntroductionWebAPI.Controllers
         [Route("{id}")]
         public async Task<IActionResult> GetCatShelterAsync(Guid id)
         {
-            CatShelter? catShelter = await catShelterService.GetCatShelterAsync(id);
+            CatShelter? catShelter = await _catShelterService.GetCatShelterAsync(id);
             if (catShelter == null)
             {
                 return BadRequest("Returned null value.");
@@ -39,7 +44,7 @@ namespace IntroductionWebAPI.Controllers
         [Route("add")]
         public async Task<IActionResult> PostCatShelterAsync([FromBody][Required] CatShelterAddModel catShelterAddModel)
         {
-            bool isAdded = await catShelterService.PostCatShelterAsync(catShelterAddModel);
+            bool isAdded = await _catShelterService.PostCatShelterAsync(catShelterAddModel);
             if (!isAdded)
             {
                 return BadRequest("Cat shelter has not been inserted.");
@@ -51,7 +56,7 @@ namespace IntroductionWebAPI.Controllers
         [Route("update/{id}")]
         public async Task<IActionResult> PutCatShelterAsync(Guid id, [FromBody][Required] CatShelterUpdateModel catShelterUpdateModel)
         {
-            bool isUpdated = await catShelterService.PutCatShelterAsync(id, catShelterUpdateModel);
+            bool isUpdated = await _catShelterService.PutCatShelterAsync(id, catShelterUpdateModel);
             if (!isUpdated)
             {
                 return BadRequest("Cat shelter has not been updated.");
@@ -63,7 +68,7 @@ namespace IntroductionWebAPI.Controllers
         [Route("delete/{id}")]
         public async Task<IActionResult> DeleteCatShelterAsync(Guid id)
         {
-            bool isUpdated = await catShelterService.DeleteCatShelterAsync(id);
+            bool isUpdated = await _catShelterService.DeleteCatShelterAsync(id);
             if (!isUpdated)
             {
                 return BadRequest("Cat shelter has not been deleted.");
