@@ -20,7 +20,7 @@ namespace Introduction.Repository
 
                 StringBuilder sql = new();
                 sql.Append("SELECT cs.\"Id\" AS ShelterId, cs.\"Name\" AS ShelterName, cs.\"Location\" AS ShelterLocation, cs.\"CreatedAt\" AS ShelterCreatedAt, " +
-                "c.\"Id\" AS CatId, c.\"Name\" AS CatName, c.\"Age\" AS CatAge, c.\"Color\" AS CatColor, c.\"ArrivalDate\" AS CatArrivalDate " +
+                "c.\"Id\" AS CatId, c.\"Name\" AS CatName, c.\"Age\" AS CatAge, c.\"Color\" AS CatColor, c.\"ArrivalDate\" AS CatArrivalDate, c.\"CatShelterId\" AS CatShelterId " +
                 "FROM \"CatShelter\" cs " +
                 "LEFT JOIN \"Cat\" c ON cs.\"Id\" = c.\"CatShelterId\" " +
                 "WHERE 1=1 ");
@@ -83,6 +83,7 @@ namespace Introduction.Repository
                             Color = reader.GetString(reader.GetOrdinal("CatColor")),
                             ArrivalDate = reader.IsDBNull(reader.GetOrdinal("CatArrivalDate")) ?
                                 null : reader.GetFieldValue<DateOnly>(reader.GetOrdinal("CatArrivalDate")),
+                            CatShelterId = reader.GetGuid(reader.GetOrdinal("CatShelterId")),
                         };
                         catShelters[shelterId].Cats.Add(cat);
                     }
@@ -104,7 +105,7 @@ namespace Introduction.Repository
 
                 string sql =
                     "SELECT cs.\"Id\" AS ShelterId, cs.\"Name\" AS ShelterName, cs.\"Location\" AS ShelterLocation, cs.\"CreatedAt\" AS ShelterCreatedAt, " +
-                    "c.\"Id\" AS CatId, c.\"Name\" AS CatName, c.\"Age\" AS CatAge, c.\"Color\" AS CatColor, c.\"ArrivalDate\" AS CatArrivalDate " +
+                    "c.\"Id\" AS CatId, c.\"Name\" AS CatName, c.\"Age\" AS CatAge, c.\"Color\" AS CatColor, c.\"ArrivalDate\" AS CatArrivalDate, c.\"CatShelterId\" AS CatShelterId " +
                     "FROM \"CatShelter\" cs " +
                     "LEFT JOIN \"Cat\" c ON cs.\"Id\" = c.\"CatShelterId\" " +
                     "WHERE cs.\"Id\" = @id ";
@@ -134,6 +135,7 @@ namespace Introduction.Repository
                             Color = reader.GetString(reader.GetOrdinal("CatColor")),
                             ArrivalDate = reader.IsDBNull(reader.GetOrdinal("CatArrivalDate")) ?
                                 null : reader.GetFieldValue<DateOnly>(reader.GetOrdinal("CatArrivalDate")),
+                            CatShelterId = reader.GetGuid(reader.GetOrdinal("CatShelterId"))
                         };
                         catShelter.Cats.Add(cat);
                     }

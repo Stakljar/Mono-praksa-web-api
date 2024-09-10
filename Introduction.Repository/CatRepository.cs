@@ -69,7 +69,7 @@ namespace Introduction.Repository
                         Color = reader.GetString(reader.GetOrdinal("CatColor")),
                         ArrivalDate = reader.IsDBNull(reader.GetOrdinal("CatArrivalDate")) ?
                                null : reader.GetFieldValue<DateOnly>(reader.GetOrdinal("CatArrivalDate")),
-                        CatShelterid = reader.IsDBNull(reader.GetOrdinal("ShelterId")) ? null : reader.GetGuid(reader.GetOrdinal("ShelterId"))
+                        CatShelterId = reader.IsDBNull(reader.GetOrdinal("ShelterId")) ? null : reader.GetGuid(reader.GetOrdinal("ShelterId"))
                     };
                     cats.Add(cat);
                 }
@@ -110,7 +110,7 @@ namespace Introduction.Repository
                         Color = reader.GetString(reader.GetOrdinal("CatColor")),
                         ArrivalDate = reader.IsDBNull(reader.GetOrdinal("CatArrivalDate")) ?
                                                    null : reader.GetFieldValue<DateOnly>(reader.GetOrdinal("CatArrivalDate")),
-                        CatShelterid = reader.IsDBNull(reader.GetOrdinal("ShelterId")) ? null : reader.GetGuid(reader.GetOrdinal("ShelterId"))
+                        CatShelterId = reader.IsDBNull(reader.GetOrdinal("ShelterId")) ? null : reader.GetGuid(reader.GetOrdinal("ShelterId"))
                     };
                     catShelter.Cats.Add(cat);
                     return cat;

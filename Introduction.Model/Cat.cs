@@ -20,6 +20,6 @@ namespace Introduction.Model
 
         public DateOnly? ArrivalDate { get; set; }
 
-        public Guid? CatShelterid { get; set; }
+        public Guid? CatShelterId { get; set; }
     }
 }
