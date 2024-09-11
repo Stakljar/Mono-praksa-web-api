@@ -24,14 +24,14 @@ namespace Introduction.Service
             return await _catShelterRepository.GetCatShelterByIdAsync(id);
         }
 
-        public async Task<bool> PostCatShelterAsync(CatShelterAddModel catShelterAddModel)
+        public async Task<bool> PostCatShelterAsync(CatShelter catShelter)
         {
-            return await _catShelterRepository.InsertCatShelterAsync(catShelterAddModel);
+            return await _catShelterRepository.InsertCatShelterAsync(catShelter);
         }
 
-        public async Task<bool> PutCatShelterAsync(Guid id, CatShelterUpdateModel catShelterUpdateModel)
+        public async Task<bool> PutCatShelterAsync(CatShelter catShelter)
         {
-            return await _catShelterRepository.UpdateCatShelterByIdAsync(id, catShelterUpdateModel);
+            return await _catShelterRepository.UpdateCatShelterByIdAsync(catShelter);
         }
 
         public async Task<bool> DeleteCatShelterAsync(Guid id)

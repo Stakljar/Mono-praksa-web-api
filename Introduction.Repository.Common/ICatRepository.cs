@@ -9,9 +9,9 @@ namespace Introduction.Repository.Common
 
         Task<Cat?> GetCatByIdAsync(Guid id);
 
-        Task<bool> InsertCatAsync(CatAddModel catAddModel);
+        Task<bool> InsertCatAsync(Cat cat);
 
-        Task<bool> UpdateCatByIdAsync(Guid id, CatUpdateModel catUpdateModel);
+        Task<bool> UpdateCatByIdAsync(Cat cat);
 
         Task<bool> DeleteCatByIdAsync(Guid id);
     }

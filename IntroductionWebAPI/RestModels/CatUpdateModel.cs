@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Introduction.Model
+namespace IntroductionWebAPI.RestModels
 {
     public class CatUpdateModel
     {

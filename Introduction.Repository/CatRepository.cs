@@ -4,6 +4,7 @@ using Introduction.Repository.Common;
 using Npgsql;
 using NpgsqlTypes;
 using System.Text;
+using System.Net.NetworkInformation;
 
 namespace Introduction.Repository
 {
@@ -124,7 +125,7 @@ namespace Introduction.Repository
             }
         }
 
-        public async Task<bool> InsertCatAsync(CatAddModel catAddModel)
+        public async Task<bool> InsertCatAsync(Cat cat)
         {
             try
             {
@@ -134,10 +135,10 @@ namespace Introduction.Repository
                 using var cmd = new NpgsqlCommand(
                     "INSERT INTO \"Cat\" (\"Id\", \"Name\", \"Age\", \"Color\", \"ArrivalDate\") VALUES (@id, @name, @age, @color, @arrivalDate)", conn);
                 cmd.Parameters.AddWithValue("id", NpgsqlDbType.Uuid, catShelterId);
-                cmd.Parameters.AddWithValue("name", catAddModel.Name);
-                cmd.Parameters.AddWithValue("age", catAddModel.Age);
-                cmd.Parameters.AddWithValue("color", catAddModel.Color);
-                cmd.Parameters.AddWithValue("arrivalDate", catAddModel.ArrivalDate ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("name", cat.Name ?? "");
+                cmd.Parameters.AddWithValue("age", cat.Age);
+                cmd.Parameters.AddWithValue("color", cat.Color ?? "");
+                cmd.Parameters.AddWithValue("arrivalDate", cat.ArrivalDate ?? (object)DBNull.Value);
 
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();
                 if (rowsAffected <= 0)
@@ -152,55 +153,54 @@ namespace Introduction.Repository
             }
         }
 
-        public async Task<bool> UpdateCatByIdAsync(Guid id, CatUpdateModel catUpdateModel)
+        public async Task<bool> UpdateCatByIdAsync(Cat cat)
         {
             try
             {
                 using var conn = new NpgsqlConnection(connString);
                 conn.Open();
 
-                StringBuilder sql = new();
-                sql.Append("UPDATE \"Cat\" SET ");
-                var parameters = new List<NpgsqlParameter>();
-                List<string> setClauses = new List<string>();
+                StringBuilder sql = new("UPDATE \"Cat\" SET ");
 
-                var updateModelProperties = typeof(CatUpdateModel).GetProperties();
+                if (cat.Age.HasValue)
+                    sql.Append("\"Age\" = @age, ");
 
-                foreach (var property in updateModelProperties)
+                if (!string.IsNullOrEmpty(cat.Color))
+                    sql.Append("\"Color\" = @color, ");
+
+                if (cat.ArrivalDate.HasValue)
+                    sql.Append("\"ArrivalDate\" = @arrivalDate, ");
+
+                if (cat.CatShelterId.HasValue)
+                    sql.Append("\"CatShelterId\" = @catShelterId, ");
+
+                if (sql[sql.Length - 2] == ',')
                 {
-                    var newValue = property.GetValue(catUpdateModel);
-
-                    if (newValue != null)
-                    {
-                        var parameterName = $"@{property.Name}";
-                        setClauses.Add($"\"{property.Name}\" = {parameterName}");
-                        parameters.Add(new NpgsqlParameter(parameterName, newValue));
-                    }
+                    sql.Remove(sql.Length - 2, 1);
                 }
+                
+                sql.Append("WHERE \"Id\" = @id ");
+                var lel = sql.ToString();
+                using var cmd = new NpgsqlCommand(sql.ToString(), conn);
 
-                if (setClauses.Count > 0)
-                {
-                    sql.Append(string.Join(", ", setClauses) + " WHERE \"Id\" = @id");
-                    parameters.Add(new NpgsqlParameter("@id", id));
+                cmd.Parameters.AddWithValue("@age", cat.Age ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@color", cat.Color ?? "");
+                cmd.Parameters.AddWithValue("@arrivalDate", NpgsqlDbType.Date, cat.ArrivalDate ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@catShelterId", cat.CatShelterId ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@id", cat.Id);
 
-                    using var cmd = new NpgsqlCommand(sql.ToString(), conn);
-                    cmd.Parameters.AddRange(parameters.ToArray());
+                int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
-                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
-
-                    if (rowsAffected == 0)
-                    {
-                        return false;
-                    }
-                    return true;
-                }
-                else
+                if (rowsAffected == 0)
                 {
                     return false;
                 }
+                return true;
+
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                var lel = e.Message;
                 return false;
             }
         }
@@ -212,7 +212,7 @@ namespace Introduction.Repository
                 using var conn = new NpgsqlConnection(connString);
                 conn.Open();
 
-                using var cmd = new NpgsqlCommand("DELETE FROM \"Cat\" WHERE \"Id\" = @id", conn);
+                using var cmd = new NpgsqlCommand("DELETE FROM \"Cat\" WHERE \"Id\" = @id ", conn);
 
                 cmd.Parameters.AddWithValue("id", NpgsqlDbType.Uuid, id);
 

@@ -9,9 +9,9 @@ namespace Introduction.Repository.Common
 
         Task<CatShelter?> GetCatShelterByIdAsync(Guid id);
 
-        Task<bool> InsertCatShelterAsync(CatShelterAddModel catShelterAddModel);
+        Task<bool> InsertCatShelterAsync(CatShelter catShelter);
 
-        Task<bool> UpdateCatShelterByIdAsync(Guid id, CatShelterUpdateModel catShelterUpdateModel);
+        Task<bool> UpdateCatShelterByIdAsync(CatShelter catShelter);
 
         Task<bool> DeleteCatShelterByIdAsync(Guid id);
     }

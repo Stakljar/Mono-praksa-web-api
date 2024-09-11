@@ -9,9 +9,9 @@ namespace Introduction.Service.Common
 
         Task<Cat?> GetCatAsync(Guid id);
 
-        Task<bool> PostCatAsync(CatAddModel catAddModel);
+        Task<bool> PostCatAsync(Cat cat);
 
-        Task<bool> PutCatAsync(Guid id, CatUpdateModel catUpdateModel);
+        Task<bool> PutCatAsync(Cat cat);
 
         Task<bool> DeleteCatAsync(Guid id);
     }

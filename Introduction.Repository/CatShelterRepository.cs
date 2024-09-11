@@ -173,7 +173,7 @@ namespace Introduction.Repository
             }
         }
 
-        public async Task<bool> InsertCatShelterAsync(CatShelterAddModel catShelterAddModel)
+        public async Task<bool> InsertCatShelterAsync(CatShelter catShelter)
         {
             try
             {
@@ -183,9 +183,9 @@ namespace Introduction.Repository
                 using var cmd = new NpgsqlCommand(
                     "INSERT INTO \"CatShelter\" (\"Id\", \"Name\", \"Location\", \"EstablishedAt\") VALUES (@id, @name, @location, @establishedAt)", conn);
                 cmd.Parameters.AddWithValue("id", NpgsqlDbType.Uuid, catShelterId);
-                cmd.Parameters.AddWithValue("name", catShelterAddModel.Name);
-                cmd.Parameters.AddWithValue("location", catShelterAddModel.Location);
-                cmd.Parameters.AddWithValue("establishedAt", catShelterAddModel.EstablishedAt ?? DateOnly.FromDateTime(DateTime.Now));
+                cmd.Parameters.AddWithValue("name", catShelter.Name ?? "");
+                cmd.Parameters.AddWithValue("location", catShelter.Location ?? "");
+                cmd.Parameters.AddWithValue("establishedAt", catShelter.EstablishedAt ?? DateOnly.FromDateTime(DateTime.Now));
 
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();
                 if (rowsAffected <= 0)
@@ -200,52 +200,45 @@ namespace Introduction.Repository
             }
         }
 
-        public async Task<bool> UpdateCatShelterByIdAsync(Guid id, CatShelterUpdateModel catShelterUpdateModel)
+        public async Task<bool> UpdateCatShelterByIdAsync(CatShelter catShelter)
         {
             try
             {
                 using var conn = new NpgsqlConnection(connString);
                 conn.Open();
 
-                StringBuilder sql = new();
-                sql.Append("UPDATE \"CatShelter\" SET ");
-                var parameters = new List<NpgsqlParameter>();
-                List<string> setClauses = [];
+                StringBuilder sql = new("UPDATE \"CatShelter\" SET ");
 
-                var updateModelProperties = typeof(CatShelterUpdateModel).GetProperties();
+                if (!string.IsNullOrEmpty(catShelter.Name))
+                    sql.Append("\"Name\" = @name, ");
 
-                foreach (var property in updateModelProperties)
+                if (!string.IsNullOrEmpty(catShelter.Location))
+                    sql.Append("\"Location\" = @location, ");
+
+                if (catShelter.EstablishedAt.HasValue)
+                    sql.Append("\"EstablishedAt\" = @establishedAt, ");
+
+
+                if (sql[sql.Length - 2] == ',')
                 {
-                    var newValue = property.GetValue(catShelterUpdateModel);
-
-                    if (newValue != null)
-                    {
-                        var parameterName = $"@{property.Name}";
-                        setClauses.Add($"\"{property.Name}\" = {parameterName}");
-                        parameters.Add(new NpgsqlParameter(parameterName, newValue));
-                    }
+                    sql.Remove(sql.Length - 2, 1);
                 }
 
-                if (setClauses.Count > 0)
-                {
-                    sql.Append(string.Join(", ", setClauses) + " WHERE \"Id\" = @id");
-                    parameters.Add(new NpgsqlParameter("@id", id));
+                sql.Append(" WHERE \"Id\" = @id");
 
-                    using var cmd = new NpgsqlCommand(sql.ToString(), conn);
-                    cmd.Parameters.AddRange(parameters.ToArray());
+                using var cmd = new NpgsqlCommand(sql.ToString(), conn);
+                cmd.Parameters.AddWithValue("@name", catShelter.Name ?? "");
+                cmd.Parameters.AddWithValue("@location", catShelter.Location ?? "");
+                cmd.Parameters.AddWithValue("@establishedAt", catShelter.EstablishedAt ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@id", catShelter.Id);
 
-                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
+                int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
-                    if (rowsAffected == 0)
-                    {
-                        return false;
-                    }
-                    return true;
-                }
-                else
+                if (rowsAffected == 0)
                 {
                     return false;
                 }
+                return true;
             }
             catch (Exception)
             {

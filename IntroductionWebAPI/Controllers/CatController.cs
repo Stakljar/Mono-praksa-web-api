@@ -1,8 +1,11 @@
 ﻿using Introduction.Common;
 using Introduction.Model;
 using Introduction.Service.Common;
+using IntroductionWebAPI.RestModels;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing;
+using System.Xml.Linq;
 
 namespace IntroductionWebAPI.Controllers
 {
@@ -49,6 +52,16 @@ namespace IntroductionWebAPI.Controllers
             {
                 return BadRequest("Returned null value.");
             }
+            List<CatGetModel> catGetModels = cats
+                .Select(c => new CatGetModel
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Age = (int)c.Age,
+                    Color = c.Color,
+                    ArrivalDate = c.ArrivalDate,
+                    CatShelterId = c.CatShelterId,
+                }).ToList();
             return Ok(cats);
         }
 
@@ -61,6 +74,15 @@ namespace IntroductionWebAPI.Controllers
             {
                 return BadRequest("Returned null value.");
             }
+            CatGetModel catGetModel = new()
+            {
+                Id = cat.Id,
+                Name = cat.Name,
+                Age = (int)cat.Age,
+                Color = cat.Color,
+                ArrivalDate = cat.ArrivalDate,
+                CatShelterId = cat.CatShelterId,
+            };
             return Ok(cat);
         }
 
@@ -68,7 +90,15 @@ namespace IntroductionWebAPI.Controllers
         [Route("add")]
         public async Task<IActionResult> PostCatAsync([FromBody][Required] CatAddModel catAddModel)
         {
-            bool isAdded = await _catService.PostCatAsync(catAddModel);
+            Cat cat = new()
+            {
+                Name = catAddModel.Name,
+                Age = catAddModel.Age,
+                Color = catAddModel.Color,
+                ArrivalDate = catAddModel.ArrivalDate,
+            };
+
+            bool isAdded = await _catService.PostCatAsync(cat);
             if(!isAdded)
             {
                 return BadRequest("Cat has not been inserted.");
@@ -80,7 +110,15 @@ namespace IntroductionWebAPI.Controllers
         [Route("update/{id}")]
         public async Task<IActionResult> PutCatAsync(Guid id, [FromBody][Required] CatUpdateModel catUpdateModel)
         {
-            bool isUpdated = await _catService.PutCatAsync(id, catUpdateModel);
+            Cat cat = new()
+            {
+                Id = id,
+                Age = catUpdateModel.Age,
+                Color = catUpdateModel.Color,
+                ArrivalDate = catUpdateModel.ArrivalDate,
+            };
+
+            bool isUpdated = await _catService.PutCatAsync(cat);
             if (!isUpdated)
             {
                 return BadRequest("Cat has not been updated.");

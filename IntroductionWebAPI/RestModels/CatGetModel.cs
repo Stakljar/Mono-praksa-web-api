@@ -1,18 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Introduction.Model
+namespace IntroductionWebAPI.RestModels
 {
-    public class CatAddModel
+    public class CatGetModel
     {
-        [Required(ErrorMessage = "Name is required.")]
+        public Guid Id { get; set; }
+
         public required string Name { get; set; }
 
-        [Required(ErrorMessage = "Age is required.")]
         public int Age { get; set; }
 
-        [Required(ErrorMessage = "Color is required.")]
         public required string Color { get; set; }
 
         public DateOnly? ArrivalDate { get; set; }
+
+        public Guid? CatShelterId { get; set; }
     }
 }

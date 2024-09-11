@@ -1,6 +1,7 @@
 ﻿using Introduction.Common;
 using Introduction.Model;
 using Introduction.Service.Common;
+using IntroductionWebAPI.RestModels;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -59,7 +60,25 @@ namespace IntroductionWebAPI.Controllers
             {
                 return BadRequest("Returned null value.");
             }
-            return Ok(catsShelters);
+            List<CatShelterGetModel> catsShelterGetModels = catsShelters
+                .Select(cs => new CatShelterGetModel
+                {
+                    Id = cs.Id,
+                    Name = cs.Name,
+                    Location = cs.Location,
+                    EstablishedAt = (DateOnly)cs.EstablishedAt,
+                    Cats = cs.Cats.Select(c => new CatGetModel
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                        Age = (int)c.Age,
+                        Color = c.Color,
+                        ArrivalDate = c.ArrivalDate,
+                        CatShelterId = c.CatShelterId,
+                    }).ToList()
+                })
+                .ToList();
+            return Ok(catsShelterGetModels);
         }
 
         [HttpGet]
@@ -71,6 +90,22 @@ namespace IntroductionWebAPI.Controllers
             {
                 return BadRequest("Returned null value.");
             }
+            CatShelterGetModel satShelterGetModel = new()
+            {
+                Id = catShelter.Id,
+                Name = catShelter.Name,
+                Location = catShelter.Location,
+                EstablishedAt = (DateOnly)catShelter.EstablishedAt,
+                Cats = catShelter.Cats.Select(c => new CatGetModel
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Age = (int)c.Age,
+                    Color = c.Color,
+                    ArrivalDate = c.ArrivalDate,
+                    CatShelterId = c.CatShelterId,
+                }).ToList()
+            };
             return Ok(catShelter);
         }
 
@@ -78,7 +113,14 @@ namespace IntroductionWebAPI.Controllers
         [Route("add")]
         public async Task<IActionResult> PostCatShelterAsync([FromBody][Required] CatShelterAddModel catShelterAddModel)
         {
-            bool isAdded = await _catShelterService.PostCatShelterAsync(catShelterAddModel);
+            CatShelter catShelter = new()
+            {
+                Name = catShelterAddModel.Name,
+                Location = catShelterAddModel.Location,
+                EstablishedAt = catShelterAddModel.EstablishedAt,
+            };
+
+            bool isAdded = await _catShelterService.PostCatShelterAsync(catShelter);
             if (!isAdded)
             {
                 return BadRequest("Cat shelter has not been inserted.");
@@ -90,7 +132,15 @@ namespace IntroductionWebAPI.Controllers
         [Route("update/{id}")]
         public async Task<IActionResult> PutCatShelterAsync(Guid id, [FromBody][Required] CatShelterUpdateModel catShelterUpdateModel)
         {
-            bool isUpdated = await _catShelterService.PutCatShelterAsync(id, catShelterUpdateModel);
+            CatShelter catShelter = new()
+            {
+                Id = id,
+                Name = catShelterUpdateModel.Name,
+                Location = catShelterUpdateModel.Location,
+                EstablishedAt = catShelterUpdateModel.EstablishedAt,
+            };
+
+            bool isUpdated = await _catShelterService.PutCatShelterAsync(catShelter);
             if (!isUpdated)
             {
                 return BadRequest("Cat shelter has not been updated.");

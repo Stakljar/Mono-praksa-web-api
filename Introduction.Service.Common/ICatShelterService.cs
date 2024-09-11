@@ -9,9 +9,9 @@ namespace Introduction.Service.Common
 
         Task<CatShelter?> GetCatShelterAsync(Guid id);
 
-        Task<bool> PostCatShelterAsync(CatShelterAddModel catShelterAddModel);
+        Task<bool> PostCatShelterAsync(CatShelter catShelter);
 
-        Task<bool> PutCatShelterAsync(Guid id, CatShelterUpdateModel catShelterUpdateModel);
+        Task<bool> PutCatShelterAsync(CatShelter catShelter);
 
         Task<bool> DeleteCatShelterAsync(Guid id);
     }

@@ -24,14 +24,14 @@ namespace Introduction.Service
             return await _catRepository.GetCatByIdAsync(id);
         }
 
-        public async Task<bool> PostCatAsync(CatAddModel catAddModel)
+        public async Task<bool> PostCatAsync(Cat cat)
         {
-            return await _catRepository.InsertCatAsync(catAddModel);
+            return await _catRepository.InsertCatAsync(cat);
         }
 
-        public async Task<bool> PutCatAsync(Guid id, CatUpdateModel catUpdateModel)
+        public async Task<bool> PutCatAsync(Cat cat)
         {
-            return await _catRepository.UpdateCatByIdAsync(id, catUpdateModel);
+            return await _catRepository.UpdateCatByIdAsync(cat);
         }
 
         public async Task<bool> DeleteCatAsync(Guid id)
