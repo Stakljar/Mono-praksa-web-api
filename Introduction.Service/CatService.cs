@@ -1,4 +1,5 @@
-﻿using Introduction.Model;
+﻿using Introduction.Common;
+using Introduction.Model;
 using Introduction.Repository.Common;
 using Introduction.Service.Common;
 
@@ -13,10 +14,9 @@ namespace Introduction.Service
             _catRepository = catRepository;
         }
 
-        public async Task<List<Cat>?> GetCatsAsync(string name = "", int? age = null, string color = "",
-            DateOnly? arrivalDateAfter = null, DateOnly? arrivalDateBefore = null)
+        public async Task<List<Cat>?> GetCatsAsync(CatFilter catFilter, Paging paging, Sorting sorting)
         {
-            return await _catRepository.GetCatsAsync(name, age, color, arrivalDateAfter, arrivalDateBefore);
+            return await _catRepository.GetCatsAsync(catFilter, paging, sorting);
         }
 
         public async Task<Cat?> GetCatAsync(Guid id)

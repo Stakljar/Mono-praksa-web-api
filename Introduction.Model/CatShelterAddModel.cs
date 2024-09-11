@@ -10,6 +10,7 @@ namespace Introduction.Model
         [Required(ErrorMessage = "Location is required.")]
         public required string Location { get; set; }
 
-        public DateOnly? CreatedAt { get; set; }
+        [Required(ErrorMessage = "Established at date is required.")]
+        public DateOnly? EstablishedAt { get; set; }
     }
 }

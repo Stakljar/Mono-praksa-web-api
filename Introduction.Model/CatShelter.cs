@@ -16,7 +16,7 @@ namespace Introduction.Model
         public string? Location { get; set; }
 
         [Required]
-        public DateOnly? CreatedAt { get; set; }
+        public DateOnly? EstablishedAt { get; set; }
 
         public List<Cat> Cats { get; set; } = [];
     }

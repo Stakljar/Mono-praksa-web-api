@@ -2,7 +2,7 @@ CREATE TABLE "CatShelter" (
     "Id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     "Name" VARCHAR(300) NOT NULL,
     "Location" VARCHAR(400) NOT NULL,
-    "CreatedAt" DATE NOT NULL DEFAULT CURRENT_DATE
+    "EstablishedAt" DATE NOT NULL,
 );
 
 CREATE TABLE "Cat" (

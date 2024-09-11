@@ -6,6 +6,6 @@
 
         public string? Location { get; set; }
 
-        public DateOnly? CreatedAt { get; set; }
+        public DateOnly? EstablishedAt { get; set; }
     }
 }

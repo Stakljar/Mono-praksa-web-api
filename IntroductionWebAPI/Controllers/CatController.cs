@@ -1,4 +1,5 @@
-﻿using Introduction.Model;
+﻿using Introduction.Common;
+using Introduction.Model;
 using Introduction.Service.Common;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
@@ -17,10 +18,33 @@ namespace IntroductionWebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCatsAsync(string name = "", int? age = null, string color = "",
-            DateOnly? arrivalDateAfter = null, DateOnly? arrivalDateBefore = null)
+        public async Task<IActionResult> GetCatsAsync(string name = "", int? ageAbove = null, int? ageBelow = null, string color = "",
+            DateOnly? arrivalDateAfter = null, DateOnly? arrivalDateBefore = null, int pageSize = 10, int pageNumber = 1, string sortBy = "Id",
+            bool isAscending = false)
         {
-            List<Cat>? cats = await _catService.GetCatsAsync(name, age, color, arrivalDateAfter, arrivalDateBefore);
+            CatFilter catFilter = new()
+            {
+                Name = name,
+                AgeAbove = ageAbove,
+                AgeBelow = ageBelow,
+                Color = color,
+                ArrivalDateAfter = arrivalDateAfter,
+                ArrivalDateBefore = arrivalDateBefore
+            };
+
+            Paging paging = new()
+            {
+                PageSize = pageSize,
+                PageNumber = pageNumber,
+            };
+
+            Sorting sorting = new()
+            {
+                SortBy = sortBy,
+                IsAscending = isAscending,
+            };
+
+            List<Cat>? cats = await _catService.GetCatsAsync(catFilter, paging, sorting);
             if(cats == null)
             {
                 return BadRequest("Returned null value.");

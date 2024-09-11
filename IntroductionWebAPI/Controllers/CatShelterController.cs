@@ -1,4 +1,5 @@
-﻿using Introduction.Model;
+﻿using Introduction.Common;
+using Introduction.Model;
 using Introduction.Service.Common;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
@@ -17,10 +18,43 @@ namespace IntroductionWebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCatSheltersAsync(string name = "", string location = "",
-            DateOnly? createdAtDateAfter = null, DateOnly? createdAtDateBefore = null)
+        public async Task<IActionResult> GetCatSheltersAsync(string catShelterName = "", string catShelterLocation = "",
+            DateOnly? catShelterEstablishedAtDateAfter = null, DateOnly? catShelterEstablishedAtDateBefore = null, string catName = "", int? catAgeAbove = null,
+            int? catAgeBelow = null, string catColor = "", DateOnly? catArrivalDateAfter = null, DateOnly? catArrivalDateBefore = null,
+            int pageSize = 10, int pageNumber = 1, string sortBy = "Id", bool isAscending = false)
         {
-            List<CatShelter>? catsShelters = await _catShelterService.GetCatSheltersAsync(name, location, createdAtDateAfter, createdAtDateBefore);
+
+            CatShelterFilter catShelterFilter = new()
+            {
+                Name = catShelterName,
+                Location = catShelterLocation,
+                EstablishedAtAfter = catShelterEstablishedAtDateAfter,
+                EstablishedAtBefore = catShelterEstablishedAtDateBefore,
+            };
+
+            CatFilter catFilter = new()
+            {
+                Name = catName,
+                AgeAbove = catAgeAbove,
+                AgeBelow = catAgeBelow,
+                Color = catColor,
+                ArrivalDateAfter = catArrivalDateAfter,
+                ArrivalDateBefore = catArrivalDateBefore,
+            };
+
+            Paging paging = new()
+            {
+                PageSize = pageSize,
+                PageNumber = pageNumber,
+            };
+
+            Sorting sorting = new()
+            {
+                SortBy = sortBy,
+                IsAscending = isAscending,
+            };
+
+            List<CatShelter>? catsShelters = await _catShelterService.GetCatSheltersAsync(catShelterFilter, catFilter, paging, sorting);
             if (catsShelters == null)
             {
                 return BadRequest("Returned null value.");

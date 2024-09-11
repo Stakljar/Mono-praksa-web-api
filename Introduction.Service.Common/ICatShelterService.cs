@@ -1,11 +1,11 @@
-﻿using Introduction.Model;
+﻿using Introduction.Common;
+using Introduction.Model;
 
 namespace Introduction.Service.Common
 {
     public interface ICatShelterService
     {
-        Task<List<CatShelter>?> GetCatSheltersAsync(string name = "", string location = "",
-            DateOnly? createdAtDateAfter = null, DateOnly? createdAtDateBefore = null);
+        Task<List<CatShelter>?> GetCatSheltersAsync(CatShelterFilter catShelterFilter, CatFilter catFilter, Paging paging, Sorting sorting);
 
         Task<CatShelter?> GetCatShelterAsync(Guid id);
 

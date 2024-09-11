@@ -1,4 +1,5 @@
-﻿using Introduction.Model;
+﻿using Introduction.Common;
+using Introduction.Model;
 using Introduction.Repository.Common;
 using Npgsql;
 using NpgsqlTypes;
@@ -10,49 +11,73 @@ namespace Introduction.Repository
     {
         private readonly string connString = "Host=localhost;Username=postgres;Password=12345;Database=cat_shelter_system";
 
-        public async Task<List<CatShelter>?> GetCatSheltersAsync(string name = "", string location = "",
-            DateOnly? createdAtDateAfter = null, DateOnly? createdAtDateBefore = null)
+        public async Task<List<CatShelter>?> GetCatSheltersAsync(CatShelterFilter catShelterFilter, CatFilter catFilter, Paging paging, Sorting sorting)
         {
             try
             {
                 using var conn = new NpgsqlConnection(connString);
                 conn.Open();
 
-                StringBuilder sql = new();
-                sql.Append("SELECT cs.\"Id\" AS ShelterId, cs.\"Name\" AS ShelterName, cs.\"Location\" AS ShelterLocation, cs.\"CreatedAt\" AS ShelterCreatedAt, " +
-                "c.\"Id\" AS CatId, c.\"Name\" AS CatName, c.\"Age\" AS CatAge, c.\"Color\" AS CatColor, c.\"ArrivalDate\" AS CatArrivalDate, c.\"CatShelterId\" AS CatShelterId " +
-                "FROM \"CatShelter\" cs " +
-                "LEFT JOIN \"Cat\" c ON cs.\"Id\" = c.\"CatShelterId\" " +
-                "WHERE 1=1 ");
+                StringBuilder sql = new("SELECT cs.\"Id\" AS ShelterId, cs.\"Name\" AS ShelterName, cs.\"Location\" AS ShelterLocation, " +
+                    "cs.\"EstablishedAt\" AS ShelterEstablishedAt, c.\"Id\" AS CatId, c.\"Name\" AS CatName, c.\"Age\" AS CatAge, c.\"Color\" AS CatColor, " +
+                    "c.\"ArrivalDate\" AS CatArrivalDate, c.\"CatShelterId\" AS CatShelterId " +
+                    "FROM \"CatShelter\" cs " +
+                    "LEFT JOIN \"Cat\" c ON cs.\"Id\" = c.\"CatShelterId\" " +
+                    "WHERE 1=1 ");
 
-                var parameters = new List<NpgsqlParameter>();
-                var filterDict = new Dictionary<string, object?>
-                {
-                    { "name", !string.IsNullOrEmpty(name) ? name : null },
-                    { "location", !string.IsNullOrEmpty(location) ? location : null },
-                    { "createdAtDateAfter", createdAtDateAfter.HasValue ? createdAtDateAfter.Value : null },
-                    { "createdAtDateBefore", createdAtDateBefore.HasValue ? createdAtDateBefore.Value : null }
-                };
+                if (!string.IsNullOrEmpty(catShelterFilter.Name))
+                    sql.Append("AND cs.\"Name\" ILIKE @shelterName ");
 
-                foreach (var (key, value) in filterDict)
-                {
-                    if (value != null)
-                    {
-                        sql.Append(key switch
-                        {
-                            "name" => " AND cs.\"Name\" = @name",
-                            "location" => " AND cs.\"Location\" = @location",
-                            "createdAtDateAfter" => " AND \"CreatedAt\" > @createdAtDateAfter",
-                            "createdAtDateBefore" => " AND \"CreatedAt\" < @createdAtDateBefore",
-                            _ => throw new ArgumentException("Invalid filter key")
-                        });
+                if (!string.IsNullOrEmpty(catShelterFilter.Location))
+                    sql.Append("AND cs.\"Location\" ILIKE @shelterLocation ");
 
-                        parameters.Add(new NpgsqlParameter($"@{key}", value));
-                    }
-                }
+                if (catFilter.ArrivalDateAfter.HasValue)
+                    sql.Append("AND cs.\"EstablishedAt\" > @shelterEstablishedAtAfter ");
+
+                if (catFilter.ArrivalDateBefore.HasValue)
+                    sql.Append("AND cs.\"EstablishedAt\" < @shelterEstablishedAtBefore ");
+
+
+                if (!string.IsNullOrEmpty(catFilter.Name))
+                    sql.Append("AND c.\"Name\" ILIKE @catName ");
+
+                if (catFilter.AgeAbove.HasValue)
+                    sql.Append("AND c.\"Age\" > @catAgeAbove ");
+
+                if (catFilter.AgeBelow.HasValue)
+                    sql.Append("AND c.\"Age\" < @catAgeBelow ");
+
+                if (!string.IsNullOrEmpty(catFilter.Color))
+                    sql.Append("AND c.\"Color\" LIKE @catColor ");
+
+                if (catFilter.ArrivalDateAfter.HasValue)
+                    sql.Append("AND c.\"ArrivalDate\" > @catArrivalDateAfter ");
+
+                if (catFilter.ArrivalDateBefore.HasValue)
+                    sql.Append("AND c.\"ArrivalDate\" < @catArrivalDateBefore ");
+                var gg = sql.ToString();
+
+                sql.Append($" ORDER BY cs.\"{sorting.SortBy}\" ");
+                sql.Append(sorting.IsAscending ? " ASC " : " DESC ");
+
+                var offset = (paging.PageNumber - 1) * paging.PageSize;
+                sql.Append("LIMIT @pageSize OFFSET @offset ");
 
                 using var cmd = new NpgsqlCommand(sql.ToString(), conn);
-                cmd.Parameters.AddRange(parameters.ToArray());
+                cmd.Parameters.AddWithValue("@shelterName", $"%{catShelterFilter.Name}%");
+                cmd.Parameters.AddWithValue("@shelterLocation", catShelterFilter.Location ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@shelterEstablishedAtAfter", catShelterFilter.EstablishedAtAfter ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@shelterEstablishedAtBefore", catShelterFilter.EstablishedAtBefore ?? (object)DBNull.Value);
+
+                cmd.Parameters.AddWithValue("@catName", $"%{catFilter.Name}%");
+                cmd.Parameters.AddWithValue("@catAgeAbove", catFilter.AgeAbove ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@catAgeBelow", catFilter.AgeBelow ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@catColor", catFilter.Color ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@catArrivalDateAfter", catFilter.ArrivalDateAfter ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@catArrivalDateBefore", catFilter.ArrivalDateBefore ?? (object)DBNull.Value);
+
+                cmd.Parameters.AddWithValue("@pageSize", paging.PageSize);
+                cmd.Parameters.AddWithValue("@offset", offset);
 
                 var catShelters = new Dictionary<Guid, CatShelter>();
                 using var reader = await cmd.ExecuteReaderAsync();
@@ -67,7 +92,7 @@ namespace Introduction.Repository
                             Id = shelterId,
                             Name = reader.GetString(reader.GetOrdinal("ShelterName")),
                             Location = reader.GetString(reader.GetOrdinal("ShelterLocation")),
-                            CreatedAt = reader.GetFieldValue<DateOnly>(reader.GetOrdinal("ShelterCreatedAt")),
+                            EstablishedAt = reader.GetFieldValue<DateOnly>(reader.GetOrdinal("ShelterEstablishedAt")),
                             Cats = []
                         };
                         catShelters[shelterId] = catShelter;
@@ -104,7 +129,7 @@ namespace Introduction.Repository
                 conn.Open();
 
                 string sql =
-                    "SELECT cs.\"Id\" AS ShelterId, cs.\"Name\" AS ShelterName, cs.\"Location\" AS ShelterLocation, cs.\"CreatedAt\" AS ShelterCreatedAt, " +
+                    "SELECT cs.\"Id\" AS ShelterId, cs.\"Name\" AS ShelterName, cs.\"Location\" AS ShelterLocation, cs.\"EstablishedAt\" AS ShelterEstablishedAt, " +
                     "c.\"Id\" AS CatId, c.\"Name\" AS CatName, c.\"Age\" AS CatAge, c.\"Color\" AS CatColor, c.\"ArrivalDate\" AS CatArrivalDate, c.\"CatShelterId\" AS CatShelterId " +
                     "FROM \"CatShelter\" cs " +
                     "LEFT JOIN \"Cat\" c ON cs.\"Id\" = c.\"CatShelterId\" " +
@@ -122,7 +147,7 @@ namespace Introduction.Repository
                         Id = reader.GetGuid(reader.GetOrdinal("ShelterId")),
                         Name = reader.GetString(reader.GetOrdinal("ShelterName")),
                         Location = reader.GetString(reader.GetOrdinal("ShelterLocation")),
-                        CreatedAt = reader.GetFieldValue<DateOnly>(reader.GetOrdinal("ShelterCreatedAt")),
+                        EstablishedAt = reader.GetFieldValue<DateOnly>(reader.GetOrdinal("ShelterEstablishedAt")),
                     };
 
                     if (!reader.IsDBNull(reader.GetOrdinal("CatId")))
@@ -156,11 +181,11 @@ namespace Introduction.Repository
                 Guid catShelterId = Guid.NewGuid();
                 conn.Open();
                 using var cmd = new NpgsqlCommand(
-                    "INSERT INTO \"CatShelter\" (\"Id\", \"Name\", \"Location\", \"CreatedAt\") VALUES (@id, @name, @location, @createdAt)", conn);
+                    "INSERT INTO \"CatShelter\" (\"Id\", \"Name\", \"Location\", \"EstablishedAt\") VALUES (@id, @name, @location, @establishedAt)", conn);
                 cmd.Parameters.AddWithValue("id", NpgsqlDbType.Uuid, catShelterId);
                 cmd.Parameters.AddWithValue("name", catShelterAddModel.Name);
                 cmd.Parameters.AddWithValue("location", catShelterAddModel.Location);
-                cmd.Parameters.AddWithValue("createdAt", catShelterAddModel.CreatedAt ?? new DateOnly());
+                cmd.Parameters.AddWithValue("establishedAt", catShelterAddModel.EstablishedAt ?? DateOnly.FromDateTime(DateTime.Now));
 
                 int rowsAffected = await cmd.ExecuteNonQueryAsync();
                 if (rowsAffected <= 0)

@@ -1,4 +1,5 @@
-﻿using Introduction.Model;
+﻿using Introduction.Common;
+using Introduction.Model;
 using Introduction.Repository.Common;
 using Npgsql;
 using NpgsqlTypes;
@@ -10,51 +11,50 @@ namespace Introduction.Repository
     {
         private readonly string connString = "Host=localhost;Username=postgres;Password=12345;Database=cat_shelter_system";
 
-        public async Task<List<Cat>?> GetCatsAsync(string name = "", int? age = null, string color = "",
-            DateOnly? arrivalDateAfter = null, DateOnly? arrivalDateBefore = null)
+        public async Task<List<Cat>?> GetCatsAsync(CatFilter catFilter, Paging paging, Sorting sorting)
         {
             try
             {
                 using var conn = new NpgsqlConnection(connString);
                 conn.Open();
 
-                StringBuilder sql = new();
-                sql.Append("SELECT c.\"Id\" AS CatId, c.\"Name\" AS CatName, c.\"Age\" AS CatAge, c.\"Color\" AS CatColor, c.\"ArrivalDate\" AS CatArrivalDate, " +
-                    "cs.\"Id\" AS ShelterId, cs.\"Name\" AS ShelterName, cs.\"Location\" AS ShelterLocation, cs.\"CreatedAt\" AS ShelterCreatedAt " +
-                    "FROM \"Cat\" c " +
-                    "LEFT JOIN \"CatShelter\" cs ON cs.\"Id\" = c.\"CatShelterId\" " +
+                StringBuilder sql = new("SELECT * " +
+                    "FROM \"Cat\" " +
                     "WHERE 1=1 ");
 
-                var parameters = new List<NpgsqlParameter>();
-                var filterDict = new Dictionary<string, object?>
-                {
-                    { "name", !string.IsNullOrEmpty(name) ? name : null },
-                    { "age", age.HasValue ? age : null },
-                    { "color", !string.IsNullOrEmpty(color) ? color : null },
-                    { "ArrivalDateAfter", arrivalDateAfter.HasValue ? arrivalDateAfter.Value : null },
-                    { "ArrivalDateBefore", arrivalDateBefore.HasValue ? arrivalDateBefore.Value : null }
-                };
+                if (!string.IsNullOrEmpty(catFilter.Name))
+                    sql.Append("AND \"Name\" ILIKE @name ");
 
-                foreach (var (key, value) in filterDict)
-                {
-                    if (value != null)
-                    {
-                        sql.Append(key switch
-                        {
-                            "name" => " AND c.\"Name\" = @name",
-                            "age" => " AND c.\"Age\" = @age",
-                            "color" => " AND c.\"Color\" = @color",
-                            "ArrivalDateAfter" => " AND c.\"ArrivalDate\" > @ArrivalDateAfter",
-                            "ArrivalDateBefore" => " AND c.\"ArrivalDate\" < @ArrivalDateBefore",
-                            _ => throw new ArgumentException("Invalid filter key")
-                        });
+                if (catFilter.AgeAbove.HasValue)
+                    sql.Append("AND \"Age\" > @ageAbove ");
 
-                        parameters.Add(new NpgsqlParameter($"@{key}", value));
-                    }
-                }
+                if (catFilter.AgeBelow.HasValue)
+                    sql.Append("AND \"Age\" < @ageBelow ");
+
+                if (!string.IsNullOrEmpty(catFilter.Color))
+                    sql.Append("AND \"Color\" LIKE @color ");
+
+                if (catFilter.ArrivalDateAfter.HasValue)
+                    sql.Append("AND \"ArrivalDate\" > @arrivalDateAfter ");
+
+                if (catFilter.ArrivalDateBefore.HasValue)
+                    sql.Append("AND \"ArrivalDate\" < @arrivalDateBefore ");
+
+                sql.Append($" ORDER BY \"{sorting.SortBy}\" ");
+                sql.Append(sorting.IsAscending ? " ASC " : " DESC ");
+
+                var offset = (paging.PageNumber - 1) * paging.PageSize;
+                sql.Append("LIMIT @pageSize OFFSET @offset ");
 
                 using var cmd = new NpgsqlCommand(sql.ToString(), conn);
-                cmd.Parameters.AddRange(parameters.ToArray());
+                cmd.Parameters.AddWithValue("@name", $"{catFilter.Name}%");
+                cmd.Parameters.AddWithValue("@ageAbove", catFilter.AgeAbove ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@ageBelow", catFilter.AgeBelow ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@color", catFilter.Color);
+                cmd.Parameters.AddWithValue("@arrivalDateAfter", catFilter.ArrivalDateAfter ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@arrivalDateBefore", catFilter.ArrivalDateBefore ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@pageSize", paging.PageSize);
+                cmd.Parameters.AddWithValue("@offset", offset);
 
                 List<Cat> cats = [];
                 using var reader = await cmd.ExecuteReaderAsync();
@@ -63,13 +63,13 @@ namespace Introduction.Repository
                 {
                     Cat cat = new()
                     {
-                        Id = reader.GetGuid(reader.GetOrdinal("CatId")),
-                        Name = reader.GetString(reader.GetOrdinal("CatName")),
-                        Age = reader.GetInt32(reader.GetOrdinal("CatAge")),
-                        Color = reader.GetString(reader.GetOrdinal("CatColor")),
-                        ArrivalDate = reader.IsDBNull(reader.GetOrdinal("CatArrivalDate")) ?
-                               null : reader.GetFieldValue<DateOnly>(reader.GetOrdinal("CatArrivalDate")),
-                        CatShelterId = reader.IsDBNull(reader.GetOrdinal("ShelterId")) ? null : reader.GetGuid(reader.GetOrdinal("ShelterId"))
+                        Id = reader.GetGuid(reader.GetOrdinal("Id")),
+                        Name = reader.GetString(reader.GetOrdinal("Name")),
+                        Age = reader.GetInt32(reader.GetOrdinal("Age")),
+                        Color = reader.GetString(reader.GetOrdinal("Color")),
+                        ArrivalDate = reader.IsDBNull(reader.GetOrdinal("ArrivalDate")) ?
+                               null : reader.GetFieldValue<DateOnly>(reader.GetOrdinal("ArrivalDate")),
+                        CatShelterId = reader.IsDBNull(reader.GetOrdinal("CatShelterId")) ? null : reader.GetGuid(reader.GetOrdinal("CatShelterId"))
                     };
                     cats.Add(cat);
                 }
@@ -89,11 +89,9 @@ namespace Introduction.Repository
                 conn.Open();
 
                 string sql =
-                    "SELECT c.\"Id\" AS CatId, c.\"Name\" AS CatName, c.\"Age\" AS CatAge, c.\"Color\" AS CatColor, c.\"ArrivalDate\" AS CatArrivalDate, " +
-                    "cs.\"Id\" AS ShelterId, cs.\"Name\" AS ShelterName, cs.\"Location\" AS ShelterLocation, cs.\"CreatedAt\" AS ShelterCreatedAt " +
-                    "FROM \"Cat\" c " +
-                    "LEFT JOIN \"CatShelter\" cs ON cs.\"Id\" = c.\"CatShelterId\" " +
-                    "WHERE c.\"Id\" = @id ";
+                    "SELECT * " +
+                    "FROM \"Cat\" " +
+                    "WHERE \"Id\" = @id ";
 
                 using var cmd = new NpgsqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("id", NpgsqlDbType.Uuid, id);
@@ -104,13 +102,13 @@ namespace Introduction.Repository
                 {
                     Cat cat = new()
                     {
-                        Id = reader.GetGuid(reader.GetOrdinal("CatId")),
-                        Name = reader.GetString(reader.GetOrdinal("CatName")),
-                        Age = reader.GetInt32(reader.GetOrdinal("CatAge")),
-                        Color = reader.GetString(reader.GetOrdinal("CatColor")),
-                        ArrivalDate = reader.IsDBNull(reader.GetOrdinal("CatArrivalDate")) ?
-                                                   null : reader.GetFieldValue<DateOnly>(reader.GetOrdinal("CatArrivalDate")),
-                        CatShelterId = reader.IsDBNull(reader.GetOrdinal("ShelterId")) ? null : reader.GetGuid(reader.GetOrdinal("ShelterId"))
+                        Id = reader.GetGuid(reader.GetOrdinal("Id")),
+                        Name = reader.GetString(reader.GetOrdinal("Name")),
+                        Age = reader.GetInt32(reader.GetOrdinal("Age")),
+                        Color = reader.GetString(reader.GetOrdinal("Color")),
+                        ArrivalDate = reader.IsDBNull(reader.GetOrdinal("ArrivalDate")) ?
+                                                   null : reader.GetFieldValue<DateOnly>(reader.GetOrdinal("ArrivalDate")),
+                        CatShelterId = reader.IsDBNull(reader.GetOrdinal("CatShelterId")) ? null : reader.GetGuid(reader.GetOrdinal("CatShelterId"))
                     };
                     catShelter.Cats.Add(cat);
                     return cat;

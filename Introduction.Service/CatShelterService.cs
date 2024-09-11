@@ -1,4 +1,5 @@
-﻿using Introduction.Model;
+﻿using Introduction.Common;
+using Introduction.Model;
 using Introduction.Repository.Common;
 using Introduction.Service.Common;
 
@@ -13,10 +14,9 @@ namespace Introduction.Service
             _catShelterRepository = catShelterRepository;
         }
 
-        public async Task<List<CatShelter>?> GetCatSheltersAsync(string name = "", string location = "",
-            DateOnly? createdAtDateAfter = null, DateOnly? createdAtDateBefore = null)
+        public async Task<List<CatShelter>?> GetCatSheltersAsync(CatShelterFilter catShelterFilter, CatFilter catFilter, Paging paging, Sorting sorting)
         {
-            return await _catShelterRepository.GetCatSheltersAsync(name, location, createdAtDateAfter, createdAtDateBefore);
+            return await _catShelterRepository.GetCatSheltersAsync(catShelterFilter, catFilter, paging, sorting);
         }
 
         public async Task<CatShelter?> GetCatShelterAsync(Guid id)
