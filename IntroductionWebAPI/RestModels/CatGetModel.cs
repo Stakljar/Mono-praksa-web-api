@@ -1,6 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace IntroductionWebAPI.RestModels
+﻿
+namespace Introduction.WebAPI.RestModels
 {
     public class CatGetModel
     {

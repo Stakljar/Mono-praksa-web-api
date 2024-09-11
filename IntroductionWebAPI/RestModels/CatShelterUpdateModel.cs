@@ -1,4 +1,4 @@
-﻿namespace IntroductionWebAPI.RestModels
+﻿namespace Introduction.WebAPI.RestModels
 {
     public class CatShelterUpdateModel
     {

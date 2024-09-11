@@ -1,13 +1,11 @@
 ﻿using Introduction.Common;
 using Introduction.Model;
 using Introduction.Service.Common;
-using IntroductionWebAPI.RestModels;
+using Introduction.WebAPI.RestModels;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using System.Drawing;
-using System.Xml.Linq;
 
-namespace IntroductionWebAPI.Controllers
+namespace Introduction.WebAPI.Controllers
 {
     [ApiController]
     [Route("cats")]

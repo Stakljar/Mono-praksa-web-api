@@ -4,7 +4,6 @@ using Introduction.Repository.Common;
 using Npgsql;
 using NpgsqlTypes;
 using System.Text;
-using System.Net.NetworkInformation;
 
 namespace Introduction.Repository
 {
