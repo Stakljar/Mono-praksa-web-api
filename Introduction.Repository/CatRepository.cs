@@ -179,7 +179,6 @@ namespace Introduction.Repository
                 }
                 
                 sql.Append("WHERE \"Id\" = @id ");
-                var lel = sql.ToString();
                 using var cmd = new NpgsqlCommand(sql.ToString(), conn);
 
                 cmd.Parameters.AddWithValue("@age", cat.Age ?? (object)DBNull.Value);
