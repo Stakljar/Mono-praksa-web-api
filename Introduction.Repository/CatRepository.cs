@@ -198,7 +198,6 @@ namespace Introduction.Repository
             }
             catch (Exception e)
             {
-                var lel = e.Message;
                 return false;
             }
         }
