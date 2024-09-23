@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Button from "./Button";
 
 export default function UpdateCatModal({ isOpen, catToEdit, onClose, updateCat }) {
     const [cat, setCat] = useState(catToEdit)
@@ -53,7 +54,7 @@ export default function UpdateCatModal({ isOpen, catToEdit, onClose, updateCat }
 
                     <input type="submit" value="Update Cat" />
                 </form>
-                <button onClick={onClose}>Close</button>
+                <Button onClick={onClose} text="Close" />
             </div>
         </div>
     );
