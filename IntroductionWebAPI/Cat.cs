@@ -1,25 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace IntroductionWebAPI
+﻿namespace IntroductionWebAPI
 {
-    public class Cat
+    public class Cat(long id, string name, int age, string color, DateOnly arrivalDate)
     {
-        [Key]
-        public Guid? Id { get; set; } = Guid.NewGuid();
+        public long Id { get; set; } = id;
 
-        [Required]
-        [MaxLength(50)]
-        public required string Name { get; set; }
+        public string Name { get; set; } = name;
 
-        [Required]
-        public int? Age { get; set; }
+        public int Age { get; set; } = age;
 
-        [Required]
-        [MaxLength(50)]
-        public required string Color { get; set; }
+        public string Color { get; set; } = color;
 
-        public DateOnly? ArrivalDate { get; set; }
-
-        public Guid? CatShelterid { get; set; }
+        public DateOnly ArrivalDate { get; set; } = arrivalDate;
     }
 }
