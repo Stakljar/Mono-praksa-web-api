@@ -2,6 +2,10 @@
   text-align: center;
 }
 
+.App>div {
+  padding: 20px;
+}
+
 form {
   background-color: white;
   padding: 20px;
@@ -16,7 +20,9 @@ label {
 }
 
 input[type="text"],
-input[type="number"] {
+input[type="number"],
+input[type="date"],
+select {
   width: 100%;
   padding: 8px;
   margin: 8px 0;
@@ -25,20 +31,78 @@ input[type="number"] {
   border-radius: 4px;
 }
 
+button,
 input[type="submit"] {
-  background-color: #af844c;
-  color: white;
-  padding: 10px 20px;
+  padding: 8px 12px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  color: white;
+  background-color: #ccc;
 }
 
+button:hover,
 input[type="submit"]:hover {
-  background-color: #a08345;
+  background-color: #a7a7a7;
 }
 
-.cat-table-title {
+.themed-button,
+input[type="submit"].themed-button {
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  background-color: var(--primary-color);
+  border-radius: 14px;
+}
+
+.themed-button:hover,
+input[type="submit"].themed-button:hover {
+  background-color: var(--secondary-color);
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: var(--primary-color);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.navbar-logo a {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+
+.navbar-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.navbar-links li {
+  list-style: none;
+}
+
+.navbar-links a {
+  text-decoration: none;
+  font-size: 1.2rem;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.navbar-links a:hover {
+  color: rgb(230, 230, 230);
+}
+
+.cat-table-title, 
+.cat-shelter-table-title {
   margin-top: 40px;
   background-color: white;
   padding: 10px;
@@ -53,17 +117,20 @@ table {
   border-collapse: collapse;
 }
 
-table, th, td {
+table,
+th,
+td {
   border: 1px solid #ddd;
 }
 
-th, td {
+th,
+td {
   padding: 12px;
   text-align: left;
 }
 
 th {
-  background-color: #af954c;
+  background-color: var(--primary-color);
   color: white;
 }
 
@@ -75,25 +142,16 @@ tr:hover {
   background-color: #e9e9e9;
 }
 
-button {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  color: white;
-  background-color: #ccc;
-}
-
 .edit-btn {
   background-color: #FFC107;
 }
 
-.delete-btn {
-  background-color: #F44336;
-}
-
 .edit-btn:hover {
   background-color: #FFB300;
+}
+
+.delete-btn {
+  background-color: #F44336;
 }
 
 .delete-btn:hover {
@@ -119,8 +177,83 @@ button {
   width: 300px;
 }
 
+.modal-content input[type="submit"] {
+  background-color: var(--primary-color);
+}
+
+.modal-content input[type="submit"]:hover {
+  background-color: var(--secondary-color);
+}
+
+.intro-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 85vh;
+  text-align: center;
+  flex-direction: column;
+}
+
+.welcome-section {
+  max-width: 600px;
+}
+
+.intro-title {
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.intro-description {
+  font-size: 1.5rem;
+  color: #555;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.intro-title {
+  animation: slideInFromLeft 1s ease-out;
+}
+
+.cat-info-container,
+.shelter-info-container {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  margin: auto;
+  margin-top: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cat-info-container .detail,
+.shelter-info-container .detail {
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 @media only screen and (max-width: 600px) {
   table {
-      width: 100%;
+    width: 100%;
+  }
+
+  .cat-info-container,
+  .shelter-info-container {
+    width: 80%;
+    margin: auto;
   }
 }

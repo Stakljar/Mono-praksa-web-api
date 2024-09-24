@@ -1,7 +1,6 @@
 body {
   margin: 0;
-  background-color: #f4f4f4;
-  padding: 20px;
+  background-color: var(--main-bg-color);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -12,4 +11,10 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+:root {
+  --main-bg-color: #f7f7f7;
+  --primary-color: #eeb45d;
+  --secondary-color: rgb(216, 155, 64);
 }
