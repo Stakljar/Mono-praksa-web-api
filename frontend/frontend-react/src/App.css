@@ -2,7 +2,7 @@
   text-align: center;
 }
 
-.App > div {
+.App>div {
   padding: 20px;
 }
 
@@ -20,7 +20,9 @@ label {
 }
 
 input[type="text"],
-input[type="number"] {
+input[type="number"],
+input[type="date"],
+select {
   width: 100%;
   padding: 8px;
   margin: 8px 0;
@@ -29,7 +31,8 @@ input[type="number"] {
   border-radius: 4px;
 }
 
-button, input[type="submit"] {
+button,
+input[type="submit"] {
   padding: 8px 12px;
   border: none;
   border-radius: 4px;
@@ -38,18 +41,21 @@ button, input[type="submit"] {
   background-color: #ccc;
 }
 
-button:hover, input[type="submit"]:hover {
+button:hover,
+input[type="submit"]:hover {
   background-color: #a7a7a7;
 }
 
-.themed-button, input[type="submit"].themed-button {
+.themed-button,
+input[type="submit"].themed-button {
   padding: 10px 20px;
   font-size: 1.1rem;
   background-color: var(--primary-color);
   border-radius: 14px;
 }
 
-.themed-button:hover, input[type="submit"].themed-button:hover {
+.themed-button:hover,
+input[type="submit"].themed-button:hover {
   background-color: var(--secondary-color);
 }
 
@@ -95,7 +101,8 @@ button:hover, input[type="submit"]:hover {
   color: rgb(230, 230, 230);
 }
 
-.cat-table-title {
+.cat-table-title, 
+.cat-shelter-table-title {
   margin-top: 40px;
   background-color: white;
   padding: 10px;
@@ -110,11 +117,14 @@ table {
   border-collapse: collapse;
 }
 
-table, th, td {
+table,
+th,
+td {
   border: 1px solid #ddd;
 }
 
-th, td {
+th,
+td {
   padding: 12px;
   text-align: left;
 }
@@ -207,11 +217,29 @@ tr:hover {
   animation: slideInFromLeft 1s ease-out;
 }
 
+.cat-info-container,
+.shelter-info-container {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  margin: auto;
+  margin-top: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cat-info-container .detail,
+.shelter-info-container .detail {
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+}
+
 @keyframes slideInFromLeft {
   0% {
     opacity: 0;
     transform: translateX(-100%);
   }
+
   100% {
     opacity: 1;
     transform: translateX(0);
@@ -220,6 +248,12 @@ tr:hover {
 
 @media only screen and (max-width: 600px) {
   table {
-      width: 100%;
+    width: 100%;
+  }
+
+  .cat-info-container,
+  .shelter-info-container {
+    width: 80%;
+    margin: auto;
   }
 }

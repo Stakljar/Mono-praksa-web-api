@@ -1,12 +1,12 @@
 import { useState } from "react";
 
 export default function AddCatForm({ addCat }) {
-  const [cat, setCat] = useState({ name: "", age: "", color: "" })
+  const [cat, setCat] = useState({ id: new Date().getMilliseconds(), name: "", age: "", color: "", shelterName: "", arrivedAt: "" })
 
   const handleSubmit = (e) => {
     e.preventDefault();
     addCat(cat);
-    setCat({ name: "", age: "", color: "" });
+    setCat({ name: "", age: "", color: "", shelterName: "", arrivedAt: "" });
   };
 
   const handleChange = (e) => {
@@ -48,6 +48,23 @@ export default function AddCatForm({ addCat }) {
         onChange={handleChange}
         placeholder="Enter cat's color"
         required
+      /><br /><br />
+
+      <label htmlFor="catShelterNames">Cat's Shelter Name:</label><br />
+      <select id="catShelterNames" name="shelterName" value={cat.shelterName} onChange={handleChange}>
+        <option value="" disabled>-- Select Shelter --</option>
+        <option value="shelter">Shelter</option>
+        <option value="shelter2">Shelter2</option>
+      </select><br /><br />
+
+      <label htmlFor="catArrivedAt">Cat's Shelter Arrival Date:</label><br />
+      <input
+        type="date"
+        id="catArrivedAt"
+        name="arrivedAt"
+        value={cat.arrivedAt}
+        onChange={handleChange}
+        placeholder="Enter cat's shelter arrival date"
       /><br /><br />
 
       <input type="submit" className="themed-button" value="Add Cat" />

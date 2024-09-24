@@ -4,10 +4,9 @@ import CatTable from "../components/CatTable";
 import UpdateCatModal from "../components/UpdateCatModal";
 
 export default function Cats() {
-
   const [cats, setCats] = useState([
-    { id: 1, name: 'Havoc', age: 3, color: 'black' },
-    { id: 2, name: 'Zelg', age: 1, color: 'black' },
+    { id: 1, name: 'Havoc', age: 3, color: 'black', shelterName: "shelter", arrivedAt: "2022-02-02" },
+    { id: 2, name: 'Zelg', age: 1, color: 'black', shelterName: "shelter2", arrivedAt: "2022-02-02" },
   ]);
 
   const [catToEdit, setCatToEdit] = useState(null);

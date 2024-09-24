@@ -9,6 +9,8 @@ export default function CatTable({ cats, editCat, deleteCat }) {
           <th>Name</th>
           <th>Age</th>
           <th>Color</th>
+          <th>Shelter Name</th>
+          <th>Shelter Arrival Date</th>
           <th>Edit</th>
           <th>Delete</th>
         </tr>
@@ -21,6 +23,8 @@ export default function CatTable({ cats, editCat, deleteCat }) {
               <td>{cat.name}</td>
               <td>{cat.age}</td>
               <td>{cat.color}</td>
+              <td>{cat.shelterName}</td>
+              <td>{cat.arrivedAt}</td>
               <td><Button className="edit-btn" onClick={() => editCat(cat)} text="Edit" /></td>
               <td><Button className="delete-btn" onClick={() => deleteCat(cat)} text="Delete" /></td>
             </tr>

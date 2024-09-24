@@ -52,6 +52,22 @@ export default function UpdateCatModal({ isOpen, catToEdit, onClose, updateCat }
             required
           /><br /><br />
 
+          <label htmlFor="catShelterNames">Cat's Shelter Name:</label><br />
+          <select id="catShelterNames" name="shelterName" value={cat.shelterName} onChange={handleChange}>
+            <option value="" disabled>-- Select Shelter --</option>
+            <option value="shelter">Shelter</option>
+            <option value="shelter2">Shelter2</option>
+          </select><br /><br />
+          
+          <label htmlFor="catArrivedAt">Cat's Shelter Arrival Date:</label><br />
+          <input
+            type="date"
+            id="catArrivedAt"
+            name="arrivedAt"
+            value={cat.arrivedAt}
+            onChange={handleChange}
+          /><br /><br />
+
           <input type="submit" value="Update Cat" />
         </form>
         <Button onClick={onClose} text="Close" />
