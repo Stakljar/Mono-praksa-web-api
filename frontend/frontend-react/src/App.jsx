@@ -1,48 +1,31 @@
 import './App.css';
-import CatTable from './components/CatTable';
-import AddCatForm from './components/AddCatForm';
-import UpdateCatModal from './components/UpdateCatModal';
-import { useState } from 'react';
+import Cats from './pages/Cats';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Intro from './pages/Intro';
+import CatShelters from './pages/CatShelters';
+import Error from './pages/Error';
 
 function App() {
-  const [cats, setCats] = useState([
-    { id: 1, name: 'Havoc', age: 3, color: 'black' },
-    { id: 2, name: 'Zelg', age: 1, color: 'black' },
-  ]);
-
-  const [catToEdit, setCatToEdit] = useState(null);
-
   return (
     <div className="App">
-      <AddCatForm addCat={(newCat) => {
-        setCats([...cats, newCat]);
-      }} />
-
-      <h1 className="cat-table-title">Cats</h1>
-      <CatTable cats={cats}
-        editCat={(cat) => {
-          setCatToEdit(cat);
-        }}
-        deleteCat={(cat) => {
-          if (window.confirm("Are you sure you want to delete this cat from the list?")) {
-            setCats((prevCats) => prevCats.filter(c => c.id !== cat.id));
-          }
-        }}
-      />
-
-      {
-        catToEdit ?
-          <UpdateCatModal
-            isOpen={catToEdit}
-            catToEdit={catToEdit}
-            onClose={() => {
-              setCatToEdit(null);
-            }}
-            updateCat={(updatedCat) => {
-              setCats(cats.map((cat) => (cat.id === updatedCat.id ? updatedCat : cat)));
-            }}
-          /> : ""
-      }
+      <nav class="navbar">
+        <div class="navbar-logo">
+          <a href="/cat_shelters">Cat Shelters</a>
+        </div>
+        <ul className="navbar-links">
+          <li><a href="/">Intro</a></li>
+          <li><a href="/cat_shelters">Cat shelters</a></li>
+          <li><a href="/cats">Cats</a></li>
+        </ul>
+      </nav>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Intro />} />
+          <Route path="/cat_shelters" element={<CatShelters />} />
+          <Route path="/cats" element={<Cats />} />
+          <Route path="*" element={<Error />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
