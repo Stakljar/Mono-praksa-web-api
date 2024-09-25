@@ -7,6 +7,8 @@ namespace Introduction.Service.Common
     {
         Task<List<CatShelter>?> GetCatSheltersAsync(CatShelterFilter catShelterFilter, CatFilter catFilter, Paging paging, Sorting sorting);
 
+        Task<List<CatShelter>?> GetCatSheltersWithoutCatsAsync();
+
         Task<CatShelter?> GetCatShelterAsync(Guid id);
 
         Task<bool> PostCatShelterAsync(CatShelter catShelter);

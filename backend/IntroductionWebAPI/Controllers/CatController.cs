@@ -59,8 +59,9 @@ namespace Introduction.WebAPI.Controllers
                     Color = c.Color,
                     ArrivalDate = c.ArrivalDate,
                     CatShelterId = c.CatShelterId,
+                    CatShelterName = c.CatShelter?.Name
                 }).ToList();
-            return Ok(cats);
+            return Ok(catGetModels);
         }
 
         [HttpGet]
@@ -80,8 +81,9 @@ namespace Introduction.WebAPI.Controllers
                 Color = cat.Color,
                 ArrivalDate = cat.ArrivalDate,
                 CatShelterId = cat.CatShelterId,
+                CatShelterName = cat.CatShelter?.Name
             };
-            return Ok(cat);
+            return Ok(catGetModel);
         }
 
         [HttpPost]
@@ -94,6 +96,7 @@ namespace Introduction.WebAPI.Controllers
                 Age = catAddModel.Age,
                 Color = catAddModel.Color,
                 ArrivalDate = catAddModel.ArrivalDate,
+                CatShelterId = catAddModel.ShelterId
             };
 
             bool isAdded = await _catService.PostCatAsync(cat);
@@ -111,9 +114,11 @@ namespace Introduction.WebAPI.Controllers
             Cat cat = new()
             {
                 Id = id,
+                Name = catUpdateModel.Name,
                 Age = catUpdateModel.Age,
                 Color = catUpdateModel.Color,
                 ArrivalDate = catUpdateModel.ArrivalDate,
+                CatShelterId = catUpdateModel.ShelterId
             };
 
             bool isUpdated = await _catService.PutCatAsync(cat);

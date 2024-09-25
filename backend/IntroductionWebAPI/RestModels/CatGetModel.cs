@@ -14,5 +14,7 @@ namespace Introduction.WebAPI.RestModels
         public DateOnly? ArrivalDate { get; set; }
 
         public Guid? CatShelterId { get; set; }
+
+        public string? CatShelterName { get; set; }
     }
 }

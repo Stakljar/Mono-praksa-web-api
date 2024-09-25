@@ -7,6 +7,8 @@ namespace Introduction.Repository.Common
     {
         Task<List<CatShelter>?> GetCatSheltersAsync(CatShelterFilter catShelterFilter, CatFilter catFilter, Paging paging, Sorting sorting);
 
+        Task<List<CatShelter>?> GetCatSheltersWithoutCatsAsync();
+
         Task<CatShelter?> GetCatShelterByIdAsync(Guid id);
 
         Task<bool> InsertCatShelterAsync(CatShelter catShelter);

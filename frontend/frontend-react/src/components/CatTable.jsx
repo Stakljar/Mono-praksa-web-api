@@ -1,11 +1,12 @@
+import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 
-export default function CatTable({ cats, editCat, deleteCat }) {
+export default function CatTable({ cats, deleteCat }) {
+  const navigate = useNavigate()
   return (
     <table id="catTable">
       <thead>
         <tr>
-          <th>Id</th>
           <th>Name</th>
           <th>Age</th>
           <th>Color</th>
@@ -17,16 +18,15 @@ export default function CatTable({ cats, editCat, deleteCat }) {
       </thead>
       <tbody>
         {cats?.length > 0 ? (
-          cats.map((cat, index) => (
-            <tr key={index}>
-              <td>{cat.id}</td>
-              <td>{cat.name}</td>
+          cats.map((cat) => (
+            <tr key={cat.id} >
+              <td onClick={() => navigate("/cats/" + cat.id)}>{cat.name}</td>
               <td>{cat.age}</td>
               <td>{cat.color}</td>
               <td>{cat.shelterName}</td>
-              <td>{cat.arrivedAt}</td>
-              <td><Button className="edit-btn" onClick={() => editCat(cat)} text="Edit" /></td>
-              <td><Button className="delete-btn" onClick={() => deleteCat(cat)} text="Delete" /></td>
+              <td>{cat.arrivalDate}</td>
+              <td><Button className="edit-btn" onClick={() => navigate("/cats/update/" + cat.id)} text="Edit" /></td>
+              <td><Button className="delete-btn" onClick={() => deleteCat(cat.id)} text="Delete" /></td>
             </tr>
           ))
         ) : (

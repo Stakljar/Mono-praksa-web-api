@@ -81,6 +81,26 @@ namespace Introduction.WebAPI.Controllers
             return Ok(catsShelterGetModels);
         }
 
+        [HttpGet("without_cats")]
+        public async Task<IActionResult> GetCatSheltersWithoutCatsAsync()
+        {
+            List<CatShelter>? catsSheltersWithoutCats = await _catShelterService.GetCatSheltersWithoutCatsAsync();
+            if (catsSheltersWithoutCats == null)
+            {
+                return BadRequest("Returned null value.");
+            }
+            List<CatShelterWithoutCatsGetModel> catShelterWithoutCatsGetModel = catsSheltersWithoutCats
+                .Select(cs => new CatShelterWithoutCatsGetModel
+                {
+                    Id = cs.Id,
+                    Name = cs.Name,
+                    Location = cs.Location,
+                    EstablishedAt = (DateOnly)cs.EstablishedAt,
+                })
+                .ToList();
+            return Ok(catShelterWithoutCatsGetModel);
+        }
+
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> GetCatShelterAsync(Guid id)
@@ -90,7 +110,7 @@ namespace Introduction.WebAPI.Controllers
             {
                 return BadRequest("Returned null value.");
             }
-            CatShelterGetModel satShelterGetModel = new()
+            CatShelterGetModel catShelterGetModel = new()
             {
                 Id = catShelter.Id,
                 Name = catShelter.Name,
@@ -106,7 +126,7 @@ namespace Introduction.WebAPI.Controllers
                     CatShelterId = c.CatShelterId,
                 }).ToList()
             };
-            return Ok(catShelter);
+            return Ok(catShelterGetModel);
         }
 
         [HttpPost]

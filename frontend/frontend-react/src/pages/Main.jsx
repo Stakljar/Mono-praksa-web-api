@@ -3,8 +3,8 @@ import { Outlet } from "react-router-dom";
 export default function Main() {
   return (
     <>
-      <nav class="navbar">
-        <div class="navbar-logo">
+      <nav className="navbar">
+        <div className="navbar-logo">
           <a href="/cat_shelters">Cat Shelters</a>
         </div>
         <ul className="navbar-links">

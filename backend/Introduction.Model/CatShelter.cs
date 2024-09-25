@@ -15,6 +15,6 @@ namespace Introduction.Model
 
         public DateOnly? EstablishedAt { get; set; }
 
-        public List<Cat> Cats { get; set; } = [];
+        public List<Cat>? Cats { get; set; } = [];
     }
 }

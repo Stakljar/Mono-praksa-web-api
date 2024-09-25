@@ -18,5 +18,7 @@ namespace Introduction.Model
         public DateOnly? ArrivalDate { get; set; }
 
         public Guid? CatShelterId { get; set; }
+
+        public CatShelter? CatShelter { get; set; }
     }
 }

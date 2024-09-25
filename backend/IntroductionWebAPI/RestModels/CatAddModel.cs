@@ -14,5 +14,7 @@ namespace Introduction.WebAPI.RestModels
         public required string Color { get; set; }
 
         public DateOnly? ArrivalDate { get; set; }
+
+        public Guid? ShelterId { get; set; }
     }
 }

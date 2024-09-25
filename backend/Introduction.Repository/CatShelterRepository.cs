@@ -121,6 +121,41 @@ namespace Introduction.Repository
             }
         }
 
+        public async Task<List<CatShelter>?> GetCatSheltersWithoutCatsAsync()
+        {
+            try
+            {
+                using var conn = new NpgsqlConnection(connString);
+                conn.Open();
+
+                string sql = "SELECT * FROM \"CatShelter\" ";
+
+                using var cmd = new NpgsqlCommand(sql.ToString(), conn);
+
+                List<CatShelter> catShelters = [];
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    var catShelter = new CatShelter
+                    {
+                        Id = reader.GetGuid(reader.GetOrdinal("Id")),
+                        Name = reader.GetString(reader.GetOrdinal("Name")),
+                        Location = reader.GetString(reader.GetOrdinal("Location")),
+                        EstablishedAt = reader.GetFieldValue<DateOnly>(reader.GetOrdinal("EstablishedAt")),
+                        Cats = null
+                    };
+                    catShelters.Add(catShelter);
+                    
+                }
+                return catShelters;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         public async Task<CatShelter?> GetCatShelterByIdAsync(Guid id)
         {
             try

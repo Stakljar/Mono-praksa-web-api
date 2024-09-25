@@ -1,7 +1,6 @@
-﻿
-namespace Introduction.WebAPI.RestModels
+﻿namespace Introduction.WebAPI.RestModels
 {
-    public class CatShelterGetModel
+    public class CatShelterWithoutCatsGetModel
     {
         public Guid Id { get; set; }
 
@@ -10,7 +9,5 @@ namespace Introduction.WebAPI.RestModels
         public required string Location { get; set; }
 
         public DateOnly EstablishedAt { get; set; }
-
-        public List<CatGetModel>? Cats { get; set; } = [];
     }
 }

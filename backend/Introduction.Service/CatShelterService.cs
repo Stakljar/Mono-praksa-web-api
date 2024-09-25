@@ -19,6 +19,11 @@ namespace Introduction.Service
             return await _catShelterRepository.GetCatSheltersAsync(catShelterFilter, catFilter, paging, sorting);
         }
 
+        public async Task<List<CatShelter>?> GetCatSheltersWithoutCatsAsync()
+        {
+            return await _catShelterRepository.GetCatSheltersWithoutCatsAsync();
+        }
+
         public async Task<CatShelter?> GetCatShelterAsync(Guid id)
         {
             return await _catShelterRepository.GetCatShelterByIdAsync(id);
