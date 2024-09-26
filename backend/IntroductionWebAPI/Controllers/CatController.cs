@@ -45,11 +45,7 @@ namespace Introduction.WebAPI.Controllers
                 IsAscending = isAscending,
             };
 
-            List<Cat>? cats = await _catService.GetCatsAsync(catFilter, paging, sorting);
-            if(cats == null)
-            {
-                return BadRequest("Returned null value.");
-            }
+            List<Cat> cats = await _catService.GetCatsAsync(catFilter, paging, sorting);
             List<CatGetModel> catGetModels = cats
                 .Select(c => new CatGetModel
                 {
@@ -71,7 +67,7 @@ namespace Introduction.WebAPI.Controllers
             Cat? cat = await _catService.GetCatAsync(id);
             if (cat == null)
             {
-                return BadRequest("Returned null value.");
+                return NotFound("Cat not found.");
             }
             CatGetModel catGetModel = new()
             {
@@ -124,7 +120,7 @@ namespace Introduction.WebAPI.Controllers
             bool isUpdated = await _catService.PutCatAsync(cat);
             if (!isUpdated)
             {
-                return BadRequest("Cat has not been updated.");
+                return NotFound("Cat not found.");
             }
             return NoContent();
         }
@@ -136,7 +132,7 @@ namespace Introduction.WebAPI.Controllers
             bool isDeleted = await _catService.DeleteCatAsync(id);
             if (!isDeleted)
             {
-                return BadRequest("Cat has not been deleted.");
+                return NotFound("Cat not found.");
             }
             return NoContent();
         }

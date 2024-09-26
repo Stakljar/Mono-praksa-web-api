@@ -5,7 +5,7 @@ namespace Introduction.Service.Common
 {
     public interface ICatService
     {
-        Task<List<Cat>?> GetCatsAsync(CatFilter catFilter, Paging paging, Sorting sorting);
+        Task<List<Cat>> GetCatsAsync(CatFilter catFilter, Paging paging, Sorting sorting);
 
         Task<Cat?> GetCatAsync(Guid id);
 

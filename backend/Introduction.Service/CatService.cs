@@ -14,7 +14,7 @@ namespace Introduction.Service
             _catRepository = catRepository;
         }
 
-        public async Task<List<Cat>?> GetCatsAsync(CatFilter catFilter, Paging paging, Sorting sorting)
+        public async Task<List<Cat>> GetCatsAsync(CatFilter catFilter, Paging paging, Sorting sorting)
         {
             return await _catRepository.GetCatsAsync(catFilter, paging, sorting);
         }
@@ -26,11 +26,19 @@ namespace Introduction.Service
 
         public async Task<bool> PostCatAsync(Cat cat)
         {
+            if((cat.CatShelterId == null && cat.ArrivalDate != null) || (cat.CatShelterId != null && cat.ArrivalDate == null))
+            {
+                throw new InvalidOperationException("You must provide both shelter id and arrival date or none of that");
+            }
             return await _catRepository.InsertCatAsync(cat);
         }
 
         public async Task<bool> PutCatAsync(Cat cat)
         {
+            if ((cat.CatShelterId == null && cat.ArrivalDate != null) || (cat.CatShelterId != null && cat.ArrivalDate == null))
+            {
+                throw new InvalidOperationException("You must provide both shelter id and arrival date or none of that");
+            }
             return await _catRepository.UpdateCatByIdAsync(cat);
         }
 

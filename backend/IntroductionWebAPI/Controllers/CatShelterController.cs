@@ -55,11 +55,7 @@ namespace Introduction.WebAPI.Controllers
                 IsAscending = isAscending,
             };
 
-            List<CatShelter>? catsShelters = await _catShelterService.GetCatSheltersAsync(catShelterFilter, catFilter, paging, sorting);
-            if (catsShelters == null)
-            {
-                return BadRequest("Returned null value.");
-            }
+            List<CatShelter> catsShelters = await _catShelterService.GetCatSheltersAsync(catShelterFilter, catFilter, paging, sorting);
             List<CatShelterGetModel> catsShelterGetModels = catsShelters
                 .Select(cs => new CatShelterGetModel
                 {
@@ -84,11 +80,7 @@ namespace Introduction.WebAPI.Controllers
         [HttpGet("without_cats")]
         public async Task<IActionResult> GetCatSheltersWithoutCatsAsync()
         {
-            List<CatShelter>? catsSheltersWithoutCats = await _catShelterService.GetCatSheltersWithoutCatsAsync();
-            if (catsSheltersWithoutCats == null)
-            {
-                return BadRequest("Returned null value.");
-            }
+            List<CatShelter> catsSheltersWithoutCats = await _catShelterService.GetCatSheltersWithoutCatsAsync();
             List<CatShelterWithoutCatsGetModel> catShelterWithoutCatsGetModel = catsSheltersWithoutCats
                 .Select(cs => new CatShelterWithoutCatsGetModel
                 {
@@ -108,7 +100,7 @@ namespace Introduction.WebAPI.Controllers
             CatShelter? catShelter = await _catShelterService.GetCatShelterAsync(id);
             if (catShelter == null)
             {
-                return BadRequest("Returned null value.");
+                return NotFound("Cat shelter not found.");
             }
             CatShelterGetModel catShelterGetModel = new()
             {
@@ -163,7 +155,7 @@ namespace Introduction.WebAPI.Controllers
             bool isUpdated = await _catShelterService.PutCatShelterAsync(catShelter);
             if (!isUpdated)
             {
-                return BadRequest("Cat shelter has not been updated.");
+                return NotFound("Cat shelter not found.");
             }
             return NoContent();
         }
@@ -175,7 +167,7 @@ namespace Introduction.WebAPI.Controllers
             bool isUpdated = await _catShelterService.DeleteCatShelterAsync(id);
             if (!isUpdated)
             {
-                return BadRequest("Cat shelter has not been deleted.");
+                return NotFound("Cat shelter not found.");
             }
             return NoContent();
         }

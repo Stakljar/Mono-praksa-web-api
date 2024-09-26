@@ -5,7 +5,7 @@ namespace Introduction.Repository.Common
 {
     public interface ICatRepository
     {
-        Task<List<Cat>?> GetCatsAsync(CatFilter catFilter, Paging paging, Sorting sorting);
+        Task<List<Cat>> GetCatsAsync(CatFilter catFilter, Paging paging, Sorting sorting);
 
         Task<Cat?> GetCatByIdAsync(Guid id);
 

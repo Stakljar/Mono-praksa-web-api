@@ -14,12 +14,12 @@ namespace Introduction.Service
             _catShelterRepository = catShelterRepository;
         }
 
-        public async Task<List<CatShelter>?> GetCatSheltersAsync(CatShelterFilter catShelterFilter, CatFilter catFilter, Paging paging, Sorting sorting)
+        public async Task<List<CatShelter>> GetCatSheltersAsync(CatShelterFilter catShelterFilter, CatFilter catFilter, Paging paging, Sorting sorting)
         {
             return await _catShelterRepository.GetCatSheltersAsync(catShelterFilter, catFilter, paging, sorting);
         }
 
-        public async Task<List<CatShelter>?> GetCatSheltersWithoutCatsAsync()
+        public async Task<List<CatShelter>> GetCatSheltersWithoutCatsAsync()
         {
             return await _catShelterRepository.GetCatSheltersWithoutCatsAsync();
         }

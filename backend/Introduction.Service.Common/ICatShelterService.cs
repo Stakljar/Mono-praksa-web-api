@@ -5,9 +5,9 @@ namespace Introduction.Service.Common
 {
     public interface ICatShelterService
     {
-        Task<List<CatShelter>?> GetCatSheltersAsync(CatShelterFilter catShelterFilter, CatFilter catFilter, Paging paging, Sorting sorting);
+        Task<List<CatShelter>> GetCatSheltersAsync(CatShelterFilter catShelterFilter, CatFilter catFilter, Paging paging, Sorting sorting);
 
-        Task<List<CatShelter>?> GetCatSheltersWithoutCatsAsync();
+        Task<List<CatShelter>> GetCatSheltersWithoutCatsAsync();
 
         Task<CatShelter?> GetCatShelterAsync(Guid id);
 
