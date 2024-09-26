@@ -8,6 +8,7 @@ export default function CatShelterTable({ catShelters, deleteCatShelter }) {
     <table id="catShelterTable">
       <thead>
         <tr>
+          <th>Index</th>
           <th>Name</th>
           <th>Location</th>
           <th>Establishment Date</th>
@@ -17,8 +18,9 @@ export default function CatShelterTable({ catShelters, deleteCatShelter }) {
       </thead>
       <tbody>
         {catShelters?.length > 0 ? (
-          catShelters.map((catShelter) => (
+          catShelters.map((catShelter, index) => (
             <tr key={catShelter.id}>
+              <td>{index + 1}</td>
               <td onClick={() => navigate("/cat_shelters/" + catShelter.id)}>{catShelter.name}</td>
               <td>{catShelter.location}</td>
               <td>{catShelter.establishedAt}</td>

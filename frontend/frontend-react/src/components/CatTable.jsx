@@ -8,6 +8,7 @@ export default function CatTable({ cats, deleteCat }) {
     <table id="catTable">
       <thead>
         <tr>
+          <th>Index</th>
           <th>Name</th>
           <th>Age</th>
           <th>Color</th>
@@ -19,8 +20,9 @@ export default function CatTable({ cats, deleteCat }) {
       </thead>
       <tbody>
         {cats?.length > 0 ? (
-          cats.map((cat) => (
+          cats.map((cat, index) => (
             <tr key={cat.id} >
+              <td>{index + 1}</td>
               <td onClick={() => navigate("/cats/" + cat.id)}>{cat.name}</td>
               <td>{cat.age}</td>
               <td>{cat.color}</td>

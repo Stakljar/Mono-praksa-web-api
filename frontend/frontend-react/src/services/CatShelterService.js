@@ -18,13 +18,11 @@ export async function getCatShelter(id) {
   }
 }
 
-export async function getCatShelters() {
+export async function getCatShelters(params = {}) {
   try {
     return await axiosInstance.get(`/cat_shelters`,
       {
-        params: {
-
-        }
+        params: params
       }
     )
   }

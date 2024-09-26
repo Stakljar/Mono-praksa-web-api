@@ -6,12 +6,12 @@ import { getCatSheltersWithoutCats } from "../services/CatShelterService";
 import Spinner from "../components/Spinner";
 
 export default function CatUpdate() {
-  const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(true)
-  const { id } = useParams()
-  const [isSubmitLoading, setIsSubmitLoading] = useState(false)
-  const [cat, setCat] = useState({ id: id, name: "", age: "", color: "", arrivalDate: "", shelterId: "" })
-  const [shelters, setShelters] = useState([])
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+  const { id } = useParams();
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+  const [cat, setCat] = useState({ id: id, name: "", age: "", color: "", arrivalDate: "", shelterId: "" });
+  const [shelters, setShelters] = useState([]);
 
   useEffect(() => {
     if (!isLoading) {
@@ -20,11 +20,11 @@ export default function CatUpdate() {
     const loadCatAndShelters = async () => {
       const [sheltersResponse, catResponse] = await Promise.all([getCatSheltersWithoutCats(id), getCat(id)]);
       if (catResponse.status !== HttpStatusCode.Ok || sheltersResponse.status !== HttpStatusCode.Ok) {
-        alert("Failed to retrieve data");
+        alert("Failed to retrieve data.");
         setIsLoading(false);
         return;
       }
-      setShelters(sheltersResponse.data.map((shelter) => { return { id: shelter.id, name: shelter.name } }))
+      setShelters(sheltersResponse.data.map((shelter) => { return { id: shelter.id, name: shelter.name } }));
       setCat({
         id: catResponse.data.id,
         name: catResponse.data.name,
@@ -32,31 +32,31 @@ export default function CatUpdate() {
         color: catResponse.data.color,
         arrivalDate: catResponse.data.arrivalDate || "",
         shelterId: catResponse.data.catShelterId || ""
-      })
+      });
       setIsLoading(false);
     }
-    loadCatAndShelters()
+    loadCatAndShelters();
   }, [isLoading])
 
   useEffect(() => {
-    if(!isSubmitLoading){
+    if (!isSubmitLoading) {
       return;
     }
     const update = async () => {
-      const response = await updateCat(id, {...cat, shelterId: cat.shelterId || null, arrivalDate: cat.arrivalDate || null })
+      const response = await updateCat(id, { ...cat, shelterId: cat.shelterId || null, arrivalDate: cat.arrivalDate || null });
       if (response?.status === HttpStatusCode.NoContent) {
-        navigate(-1)
+        navigate(-1);
       }
       else {
-        alert("Failed to update cat")
-        setIsSubmitLoading(false)
+        alert("Failed to update cat data.");
+        setIsSubmitLoading(false);
       }
     }
-    update()
+    update();
   }, [isSubmitLoading])
 
   const handleChange = (e) => {
-    setCat((prev) => { return { ...prev, [e.target.name]: e.target.value } })
+    setCat((prev) => { return { ...prev, [e.target.name]: e.target.value } });
   }
 
   return (
@@ -68,7 +68,7 @@ export default function CatUpdate() {
             alert('When assigning shelter both arrival date and shelter must be selected.');
             return;
           }
-          setIsSubmitLoading(true)
+          setIsSubmitLoading(true);
         }}>
           <label htmlFor="catName">Cat's Name:</label><br />
           <input

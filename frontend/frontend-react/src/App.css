@@ -111,7 +111,29 @@ input[type="submit"].themed-button:hover {
   color: rgb(230, 230, 230);
 }
 
-.cat-table-title, 
+#cats .search-input,
+#catShelters .search-input {
+  display: flex;
+  align-items: center;
+  width: 400px;
+}
+
+#cats .search-input input,
+#catShelters .search-input input {
+  flex: 1;
+  border-right: none;
+  border-radius: 5px 0 0 5px;
+}
+
+#cats .search-input button,
+#catShelters .search-input button {
+  padding: 7px 20px;
+  border-left: none;
+  border-radius: 0 5px 5px 0;
+  font-size: 1.1rem;
+}
+
+.cat-table-title,
 .cat-shelter-table-title {
   margin-top: 40px;
   background-color: white;
@@ -152,7 +174,7 @@ tr:hover {
   background-color: #e9e9e9;
 }
 
-td:first-of-type:hover {
+td:nth-of-type(2):hover {
   cursor: pointer;
 }
 
@@ -225,6 +247,7 @@ td:first-of-type:hover {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }

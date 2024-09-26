@@ -13,15 +13,15 @@ export default function CatAdd() {
 
   useEffect(() => {
     const getShelters = async () => {
-      const response = await getCatSheltersWithoutCats()
+      const response = await getCatSheltersWithoutCats();
       if (response?.status === HttpStatusCode.Ok) {
-        setShelters(response.data.map((shelter) => { return { id: shelter.id, name: shelter.name } }))
+        setShelters(response.data.map((shelter) => { return { id: shelter.id, name: shelter.name } }));
       }
       else {
-        alert("Failed to retrieve shelters")
+        alert("Failed to retrieve shelters.");
       }
     }
-    getShelters()
+    getShelters();
   }, [])
 
   useEffect(() => {
@@ -29,20 +29,20 @@ export default function CatAdd() {
       return
     }
     const add = async () => {
-      const response = await addCat({...cat, shelterId: cat.shelterId || null, arrivalDate: cat.arrivalDate || null })
+      const response = await addCat({...cat, shelterId: cat.shelterId || null, arrivalDate: cat.arrivalDate || null });
       if (response?.status === HttpStatusCode.Created) {
-        navigate(-1)
+        navigate(-1);
       }
       else {
-        alert("Failed to insert cat")
-        setIsLoading(false)
+        alert("Failed to insert cat.");
+        setIsLoading(false);
       }
     }
-    add()
+    add();
   }, [isLoading])
 
   const handleChange = (e) => {
-    setCat((prev) => { return { ...prev, [e.target.name]: e.target.value } })
+    setCat((prev) => { return { ...prev, [e.target.name]: e.target.value } });
   }
 
   return (
@@ -53,7 +53,7 @@ export default function CatAdd() {
           alert('When assigning shelter both arrival date and shelter must be selected.');
           return;
         }
-        setIsLoading(true)
+        setIsLoading(true);
       }}>
         <label htmlFor="catName">Cat's Name:</label><br />
         <input

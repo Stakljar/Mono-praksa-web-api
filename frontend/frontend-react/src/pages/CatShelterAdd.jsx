@@ -5,25 +5,25 @@ import { useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
 
 export default function CatShelterAdd() {
-  const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(false)
-  const [catShelter, setCatShelter] = useState({ name: "", location: "", establishedAt: "" })
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [catShelter, setCatShelter] = useState({ name: "", location: "", establishedAt: "" });
 
   useEffect(() => {
     if (!isLoading) {
       return
     }
     const add = async () => {
-      const response = await addCatShelter(catShelter)
-      if(response?.status === HttpStatusCode.Created) {
-        navigate(-1)
+      const response = await addCatShelter(catShelter);
+      if (response?.status === HttpStatusCode.Created) {
+        navigate(-1);
       }
       else {
-        alert("Failed to insert cat shelter")
-        setIsLoading(false)
+        alert("Failed to insert cat shelter.");
+        setIsLoading(false);
       }
     }
-    add()
+    add();
   }, [isLoading])
 
   const handleChange = (e) => {
@@ -67,7 +67,7 @@ export default function CatShelterAdd() {
         /><br /><br />
 
         <input type="submit" className="themed-button" value="Add Cat Shelter" />
-        { isLoading && <Spinner />}
+        {isLoading && <Spinner />}
       </form>
     </div>
   );

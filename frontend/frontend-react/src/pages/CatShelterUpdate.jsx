@@ -24,7 +24,7 @@ export default function CatShelterUpdate() {
     const loadShelter = async () => {
       const response = await getCatShelter(id)
       if (response.status !== HttpStatusCode.Ok) {
-        alert("Failed to retrieve cat data");
+        alert("Failed to retrieve data.");
         setIsLoading(false);
         return;
       }
@@ -46,7 +46,7 @@ export default function CatShelterUpdate() {
     const updateShelter = async () => {
       const response = await updateCatShelter(id, catShelter)
       if (response.status !== HttpStatusCode.NoContent) {
-        alert("Failed to update cat shelter");
+        alert("Failed to update cat shelter data.");
         setIsSubmitLoading(false);
         return;
       }

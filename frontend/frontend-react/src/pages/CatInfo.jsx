@@ -14,9 +14,9 @@ export default function CatInfo() {
       return;
     }
     const loadCat = async () => {
-      const response = await getCat(id)
+      const response = await getCat(id);
       if (response.status !== HttpStatusCode.Ok) {
-        alert("Failed to retrieve cat data")
+        alert("Failed to retrieve cat data.");
         setIsLoading(false);
         return;
       }
@@ -27,10 +27,10 @@ export default function CatInfo() {
         color: response.data.color,
         arrivalDate: response.data.arrivalDate,
         shelterName: response.data.catShelterName
-      })
-      setIsLoading(false)
+      });
+      setIsLoading(false);
     }
-    loadCat()
+    loadCat();
   }, [isLoading])
 
   return (

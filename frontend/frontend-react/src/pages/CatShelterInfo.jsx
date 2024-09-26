@@ -5,25 +5,30 @@ import Spinner from "../components/Spinner";
 import { HttpStatusCode } from "axios";
 
 export default function CatShelterInfo() {
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
   const { id } = useParams();
   const [shelter, setShelter] = useState({ id: id, name: "", location: "", establishedAt: "" });
 
   useEffect(() => {
     if (!isLoading) {
-      return
+      return;
     }
     const loadShelter = async () => {
-      const response = await getCatShelter(id)
+      const response = await getCatShelter(id);
       if (response.status !== HttpStatusCode.Ok) {
-        alert("Failed to retrieve cat shelter data");
+        alert("Failed to retrieve cat shelter data.");
         setIsLoading(false);
         return;
       }
       setIsLoading(false);
-      setShelter({ id: response.data.id, name: response.data.name, location: response.data.location, establishedAt: response.data.establishedAt })
+      setShelter({
+        id: response.data.id,
+        name: response.data.name,
+        location: response.data.location,
+        establishedAt: response.data.establishedAt
+      });
     }
-    loadShelter()
+    loadShelter();
   }, [isLoading])
 
   return (
