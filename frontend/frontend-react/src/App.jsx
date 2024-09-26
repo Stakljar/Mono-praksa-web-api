@@ -1,6 +1,6 @@
 import './App.css';
 import Cats from './pages/Cats';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Intro from './pages/Intro';
 import CatShelters from './pages/CatShelters';
 import Error from './pages/Error';
@@ -13,24 +13,58 @@ import CatShelterUpdate from './pages/CatShelterUpdate';
 import CatUpdate from './pages/CatUpdate';
 
 function App() {
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Main />,
+      children: [
+        {
+          index: true,
+          element: <Intro />,
+        },
+        {
+          path: "cat_shelters",
+          element: <CatShelters />,
+        },
+        {
+          path: "cat_shelters/:id",
+          element: <CatShelterInfo />,
+        },
+        {
+          path: "cat_shelters/add",
+          element: <CatShelterAdd />,
+        },
+        {
+          path: "cat_shelters/update/:id",
+          element: <CatShelterUpdate />,
+        },
+        {
+          path: "cats",
+          element: <Cats />,
+        },
+        {
+          path: "cats/:id",
+          element: <CatInfo />,
+        },
+        {
+          path: "cats/add",
+          element: <CatAdd />,
+        },
+        {
+          path: "cats/update/:id",
+          element: <CatUpdate />,
+        },
+        {
+          path: "*",
+          element: <Error />,
+        },
+      ],
+    },
+  ]);
+
   return (
     <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Main />}>
-            <Route index element={<Intro />} />
-            <Route path="/cat_shelters" element={<CatShelters />} />
-            <Route path="/cat_shelters/:id" element={<CatShelterInfo />} />
-            <Route path="/cat_shelters/add" element={<CatShelterAdd />} />
-            <Route path="/cat_shelters/update/:id" element={<CatShelterUpdate />} />
-            <Route path="/cats" element={<Cats />} />
-            <Route path="/cats/:id" element={<CatInfo />} />
-            <Route path="/cats/add" element={<CatAdd />} />
-            <Route path="/cats/update/:id" element={<CatUpdate />} />
-            <Route path="*" element={<Error />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </div>
   );
 }

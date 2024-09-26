@@ -46,7 +46,7 @@ export default function Cats() {
     const remove = async () => {
       const response = await deleteCat(deleteId)
       if (response.status !== HttpStatusCode.NoContent) {
-        alert("Failed to delete cat");
+        alert("Failed to delete cat.");
         return;
       }
       setIsLoading(true)

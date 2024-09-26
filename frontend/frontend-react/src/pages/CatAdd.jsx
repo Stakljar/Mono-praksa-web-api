@@ -6,10 +6,10 @@ import { getCatSheltersWithoutCats } from "../services/CatShelterService";
 import Spinner from "../components/Spinner";
 
 export default function CatAdd() {
-  const navigate = useNavigate()
-  const [shelters, setShelters] = useState([])
-  const [cat, setCat] = useState({ name: "", age: "", color: "", arrivalDate: "", shelterId: "" })
-  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate();
+  const [shelters, setShelters] = useState([]);
+  const [cat, setCat] = useState({ name: "", age: "", color: "", arrivalDate: "", shelterId: "" });
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getShelters = async () => {

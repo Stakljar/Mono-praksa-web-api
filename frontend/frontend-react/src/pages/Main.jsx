@@ -1,16 +1,16 @@
-import { Outlet } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 
 export default function Main() {
   return (
     <>
       <nav className="navbar">
         <div className="navbar-logo">
-          <a href="/cat_shelters">Cat Shelters</a>
+          <NavLink to="/cat_shelters">Cat Shelters</NavLink>
         </div>
         <ul className="navbar-links">
-          <li><a href="/">Intro</a></li>
-          <li><a href="/cat_shelters">Cat shelters</a></li>
-          <li><a href="/cats">Cats</a></li>
+          <li><NavLink to="/">Intro</NavLink></li>
+          <li><NavLink to="/cat_shelters">Cat shelters</NavLink></li>
+          <li><NavLink to="/cats">Cats</NavLink></li>
         </ul>
       </nav>
       <Outlet />

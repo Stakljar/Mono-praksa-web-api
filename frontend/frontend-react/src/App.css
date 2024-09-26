@@ -176,7 +176,7 @@ td:first-of-type:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 85vh;
+  height: 80vh;
   text-align: center;
   flex-direction: column;
 }

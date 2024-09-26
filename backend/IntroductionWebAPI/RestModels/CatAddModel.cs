@@ -8,6 +8,7 @@ namespace Introduction.WebAPI.RestModels
         public required string Name { get; set; }
 
         [Required(ErrorMessage = "Age is required.")]
+        [Range(0, 35, ErrorMessage = "Age must be between 0 and 35.")]
         public int Age { get; set; }
 
         [Required(ErrorMessage = "Color is required.")]

@@ -5,9 +5,9 @@ import Spinner from "../components/Spinner";
 import { HttpStatusCode } from "axios";
 
 export default function CatInfo() {
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
   const { id } = useParams();
-  const [cat, setCat] = useState({ id: id, name: "", age: "", color: "", arrivalDate: "", shelterName: "" })
+  const [cat, setCat] = useState({ id: id, name: "", age: "", color: "", arrivalDate: "", shelterName: "" });
 
   useEffect(() => {
     if (!isLoading) {

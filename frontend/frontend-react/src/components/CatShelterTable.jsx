@@ -2,7 +2,8 @@ import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 
 export default function CatShelterTable({ catShelters, deleteCatShelter }) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
   return (
     <table id="catShelterTable">
       <thead>
@@ -27,7 +28,7 @@ export default function CatShelterTable({ catShelters, deleteCatShelter }) {
           ))
         ) : (
           <tr>
-            <td>No Cat Shelters available</td>
+            <td>No cat shelters available</td>
           </tr>
         )}
       </tbody>

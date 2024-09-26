@@ -19,7 +19,7 @@ export default function CatShelters() {
     const loadCatShelters = async () => {
       const response = await getCatShelters()
       if (response.status !== HttpStatusCode.Ok) {
-        alert("Failed to retrieve cat shelters");
+        alert("Failed to retrieve cat shelters.");
         setIsLoading(false);
         return;
       }
@@ -31,6 +31,7 @@ export default function CatShelters() {
           establishedAt: cs.establishedAt
         }
       }))
+      setIsLoading(false)
     }
     loadCatShelters()
   }, [isLoading])
@@ -42,7 +43,7 @@ export default function CatShelters() {
     const remove = async () => {
       const response = await deleteCatShelter(deleteId)
       if (response.status !== HttpStatusCode.NoContent) {
-        alert("Failed to delete cat shelter");
+        alert("Failed to delete cat shelter.");
         return;
       }
       setIsLoading(true)
@@ -55,7 +56,7 @@ export default function CatShelters() {
       <Button className="themed-button" text="Add Cat shelter" onClick={() => navigate("/cat_shelters/add")} />
       <h2 className="cat-shelter-table-title">Cat Shelters</h2>
       {
-        isLoading ?
+        !isLoading ?
           <CatShelterTable catShelters={catShelters}
             deleteCatShelter={(id) => {
               if (window.confirm("Are you sure you want to delete this cat shelter from the list?")) {
