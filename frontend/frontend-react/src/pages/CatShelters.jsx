@@ -49,6 +49,7 @@ export default function CatShelters() {
     const remove = async () => {
       const response = await deleteCatShelter(deleteId)
       if (response.status !== HttpStatusCode.NoContent) {
+        setDeleteId(null);
         alert("Failed to delete cat shelter.");
         return;
       }
