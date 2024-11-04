@@ -1,0 +1,278 @@
+.App {
+  text-align: center;
+}
+
+.App>div {
+  padding: 40px 20px;
+}
+
+form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  margin: 10px auto;
+}
+
+label {
+  font-size: 16px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 8px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button,
+input[type="submit"] {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+  background-color: #ccc;
+}
+
+button:hover,
+input[type="submit"]:hover {
+  background-color: #a7a7a7;
+}
+
+.themed-button,
+input[type="submit"].themed-button {
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  background-color: var(--primary-color);
+  border-radius: 14px;
+}
+
+.themed-button:hover,
+input[type="submit"].themed-button:hover {
+  background-color: var(--secondary-color);
+}
+
+.spinner {
+  margin: 40px auto;
+  width: 34px;
+  height: 34px;
+  border: 8px solid #FFFFFF00;
+  border-top: 8px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: var(--primary-color);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.navbar-logo a {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+
+.navbar-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.navbar-links li {
+  list-style: none;
+}
+
+.navbar-links a {
+  text-decoration: none;
+  font-size: 1.2rem;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.navbar-links a:hover {
+  color: rgb(230, 230, 230);
+}
+
+#cats .search-input,
+#catShelters .search-input {
+  display: flex;
+  align-items: center;
+  width: 400px;
+}
+
+#cats .search-input input,
+#catShelters .search-input input {
+  flex: 1;
+  border-right: none;
+  border-radius: 5px 0 0 5px;
+}
+
+#cats .search-input button,
+#catShelters .search-input button {
+  padding: 7px 20px;
+  border-left: none;
+  border-radius: 0 5px 5px 0;
+  font-size: 1.1rem;
+}
+
+.cat-table-title,
+.cat-shelter-table-title {
+  margin-top: 40px;
+  background-color: white;
+  padding: 10px;
+  border-radius: 8px;
+  width: fit-content;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+table {
+  width: 80%;
+  margin-top: 10px;
+  border-collapse: collapse;
+}
+
+table,
+th,
+td {
+  border: 1px solid #ddd;
+}
+
+th,
+td {
+  padding: 12px;
+  text-align: left;
+}
+
+th {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+tr {
+  background-color: white;
+}
+
+tr:hover {
+  background-color: #e9e9e9;
+}
+
+td:nth-of-type(2):hover {
+  cursor: pointer;
+}
+
+.edit-btn {
+  background-color: #FFC107;
+}
+
+.edit-btn:hover {
+  background-color: #FFB300;
+}
+
+.delete-btn {
+  background-color: #F44336;
+}
+
+.delete-btn:hover {
+  background-color: #E53935;
+}
+
+.intro-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  text-align: center;
+  flex-direction: column;
+}
+
+.welcome-section {
+  max-width: 600px;
+}
+
+.intro-title {
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.intro-description {
+  font-size: 1.5rem;
+  color: #555;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.intro-title {
+  animation: slideInFromLeft 1s ease-out;
+}
+
+.cat-info-container,
+.shelter-info-container {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  margin: auto;
+  margin-top: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cat-info-container .detail,
+.shelter-info-container .detail {
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  table {
+    width: 100%;
+  }
+
+  .cat-info-container,
+  .shelter-info-container {
+    width: 80%;
+    margin: auto;
+  }
+}
