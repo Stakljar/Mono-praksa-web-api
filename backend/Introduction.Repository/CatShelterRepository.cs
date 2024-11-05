@@ -29,10 +29,10 @@ namespace Introduction.Repository
             if (!string.IsNullOrEmpty(catShelterFilter.Location))
                 sql.Append("AND cs.\"Location\" ILIKE @shelterLocation ");
 
-            if (catFilter.ArrivalDateAfter.HasValue)
+            if (catShelterFilter.EstablishedAtAfter.HasValue)
                 sql.Append("AND cs.\"EstablishedAt\" > @shelterEstablishedAtAfter ");
 
-            if (catFilter.ArrivalDateBefore.HasValue)
+            if (catShelterFilter.EstablishedAtBefore.HasValue)
                 sql.Append("AND cs.\"EstablishedAt\" < @shelterEstablishedAtBefore ");
 
 
