@@ -53,7 +53,6 @@ namespace Introduction.Repository
 
             if (catFilter.ArrivalDateBefore.HasValue)
                 sql.Append("AND c.\"ArrivalDate\" < @catArrivalDateBefore ");
-            var gg = sql.ToString();
 
             sql.Append($" ORDER BY cs.\"{sorting.SortBy}\" ");
             sql.Append(sorting.IsAscending ? " ASC " : " DESC ");
